@@ -7,7 +7,7 @@
                 <img class="logo" src="../../public/logo.svg">
             </div>
             <div class="title">
-                <h2 >Manufacturing ExecuTion System</h2>
+                <h2 >Manufacturing Execution System</h2>
                 <!-- Manufacturing ExecuTion System -->
             </div>
             <div>
@@ -21,12 +21,9 @@
 </template>
 
 <style scoped>
-*{
-    margin: 0;
-    padding: 0;
-}
+
 .cover2 {
-  z-index: 999;
+  z-index: 2;
   position: fixed;
   width: 100%;
   height: 100px;

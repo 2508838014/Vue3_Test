@@ -47,6 +47,20 @@
 	
 	</div>
 </template>
+<script  lang="ts" setup>
+import {
+  Document,
+  Menu as IconMenu,
+  Location,
+  Setting,
+} from '@element-plus/icons-vue'
+const handleOpen = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+const handleClose = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+</script>
 
 <style scoped>
 .cover1 {
@@ -60,20 +74,3 @@
   background-color: #545c64;
 }
 </style>
-<!-- <script lang="ts">
-export default {
-}
-</script>
-<style lang="ts" scoped>
-.cover{
-  z-index: 999;
-  //animation: blurtransiform 0.5s;
-  /*Safari 和 Chrome:*/
-  -webkit-animation: blurtransiform 0.5s;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  background-color: rgba(255, 255, 255, 0.2);
-}
-</style> -->

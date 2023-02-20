@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import Sidebar from '../views/Sidebar.vue'
 import Process_Route from '../views/Home/Process_Route.vue'
+import Process_RouteEdit from '../views/Home/Process_RouteEdit.vue'
 import Product_Query from '../views/Home/Product_Query.vue'
 import Register from '../views/register.vue'
 const router = createRouter({
@@ -23,6 +24,11 @@ const router = createRouter({
           path: "/Home/Product_Query",
           name: "Product_Query",
           component: Product_Query,
+        },
+        {
+          path: "/Home/Process_RouteEdit",
+          name: "Process_RouteEdit",
+          component: Process_RouteEdit,
         },
       ],
     },
