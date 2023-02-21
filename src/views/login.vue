@@ -1,27 +1,19 @@
 <template>
   <div class="bg">
     <div class="logincard">
-      <el-form ref="ruleFormRef" :model="ruleForm" status-icon :rules="rules" label-width="120px" class="demo-ruleForm">
-        <el-form-item label="user name">
-          <el-input v-model="ruleForm.name" />
+      <el-form ref="ruleFormRef" :model="ruleForm" status-icon :rules="rules" label-width="150px">
+        <el-form-item label="account number" prop="account" style="margin-top: 60px;">
+          <el-input v-model="ruleForm.account" style="width: 240px;" />
         </el-form-item>
         <el-form-item label="Password" prop="pass">
-          <el-input v-model="ruleForm.pass" type="password" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="Confirm" prop="checkPass">
-          <el-input v-model="ruleForm.checkPass" type="password" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="level" prop="age">
-          <el-input v-model.number="ruleForm.age" />
+          <el-input v-model="ruleForm.pass" type="password" style="width: 240px;" autocomplete="off" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm(ruleFormRef)">login</el-button>
           <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
 
-          <el-button @click="Getinfo(ruleForm)">Reset</el-button>
+          <el-button @click="Getinfo(ruleForm)">Test</el-button>
         </el-form-item>
-
-
       </el-form>
     </div>
   </div>
@@ -30,16 +22,57 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { defineComponent, getCurrentInstance } from 'vue'
-import type { FormInstance } from 'element-plus'
+import { type FormInstance, ElMessage } from 'element-plus'
 import request from '../request/request'
 import router from '@/router';
 import { method } from 'lodash';
 let ruleForm = ref({
-  name: '',
+  account: '',
   pass: '',
-  checkPass: '',
-  age: ''
 })
+
+
+const ruleFormRef = ref<FormInstance>()
+
+const validatePass = (rule: any, value: any, callback: any) => {
+  if (value === '') {
+    callback(new Error('Please input the password'))
+  } else {
+    if (ruleForm.value.pass.length < 5) {
+      callback(new Error('The password must be no less than five characters'))
+    }
+    var patrn = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
+
+    if (patrn.exec(ruleForm.value.pass)) {
+      callback(new Error('The password cannot contain Chinese characters'))
+    }
+    callback()
+  }
+}
+
+const validateAccount = (rule: any, value: any, callback: any) => {
+  if (ruleForm.value.account === '') {
+    callback(new Error('Please input the account number'))
+  } else {
+    if (ruleForm.value.account.length < 5) {
+      callback(new Error('The account must be no less than five characters'))
+    }
+    var patrn = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi;
+
+    if (patrn.exec(ruleForm.value.account)) {
+      callback(new Error('The account cannot contain Chinese characters'))
+    }
+    callback()
+  }
+}
+
+const rules = reactive({
+  account: [{ validator: validateAccount, trigger: 'blur' }],
+  pass: [{ validator: validatePass, trigger: 'blur' }],
+
+})
+
+localStorage.clear()
 const Getinfo = (ruleForm: any) => {
   //这个值根据html内容变化
   console.log(ruleForm);
@@ -59,59 +92,46 @@ const Getinfo = (ruleForm: any) => {
     }
   )
 }
-
-const ruleFormRef = ref<FormInstance>()
-
-const checkAge = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback(new Error('Please input the age'))
-  }
-  setTimeout(() => {
-    if (!Number.isInteger(value)) {
-      callback(new Error('Please input digits'))
-    } else {
-      if (value < 18) {
-        callback(new Error('Age must be greater than 18'))
-      } else {
-        callback()
-      }
-    }
-  }, 1000)
-}
-
-const validatePass = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Please input the password'))
-  } else {
-    if (ruleForm.value.checkPass !== '') {
-      if (!ruleFormRef.value) return
-      ruleFormRef.value.validateField('checkPass', () => null)
-    }
-    callback()
-  }
-}
-const validatePass2 = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('Please input the password again'))
-  } else if (value !== ruleForm.value.pass) {
-    callback(new Error("Two inputs don't match!"))
-  } else {
-    callback()
-  }
-}
-
-
-const rules = reactive({
-  pass: [{ validator: validatePass, trigger: 'blur' }],
-  checkPass: [{ validator: validatePass2, trigger: 'blur' }],
-  age: [{ validator: checkAge, trigger: 'blur' }],
+let resForm=ref({
+  name:'',
+  level:''
 })
-
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
-      console.log('submit!')
+
+      localStorage.setItem("level",'2')
+      localStorage.setItem("name",'张三')
+      ElMessage({
+            message: 'Login succeeded.',
+            type: 'success',
+          })
+      router.push('/')
+
+
+
+
+
+      // const { account, password }
+      //   = ruleForm.value
+      // request.post("/login", { account, password }).then(res => {
+      //   if (res.status == 200) {
+          // ElMessage({
+          //   message: 'Login succeeded.',
+          //   type: 'success',
+          // })
+      //     router.push('/')
+      //     resForm=res.data
+      //     localStorage.setItem("level",resForm.value.level)
+      //     localStorage.setItem("name",resForm.value.name)
+      //   }
+      // }, (error) => {
+      //   console.log("fail submit");
+      //   ElMessage.error('Login failed, please check the network, etc.')
+      // })
+
+
     }
   })
 }
@@ -120,9 +140,9 @@ const resetForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields()
 }
 </script>
-<style scoped>
+<style>
 .logincard {
-  width: 400px;
+  width: 500px;
   height: 300px;
   margin: auto;
   position: absolute;
@@ -130,11 +150,13 @@ const resetForm = (formEl: FormInstance | undefined) => {
   left: 0;
   right: 0;
   bottom: 0;
+  border: 2px;
+  box-shadow: 0px 0px 5px #888888;
 }
 
 
+
 .bg {
-  z-index: 99999;
   animation: blurtransiform 0.5s;
   /*Safari 和 Chrome:*/
   -webkit-animation: blurtransiform 0.5s;
