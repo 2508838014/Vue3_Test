@@ -106,6 +106,7 @@ const tableDelete = (index: number, row: User) => {
                 type: 'success',
                 message: 'Delete completed',
             })
+            tableData.splice(index,1)
             console.log("sccess delete" + row);
         })
         .catch(() => {
@@ -183,5 +184,8 @@ let tableData = reactive(
     width: calc(100% - 40px);
     background-color: aliceblue;
     border-radius: 20px;
+}
+.routeTable{
+    padding-top: 80px;
 }
 </style>

@@ -3,22 +3,12 @@
         <div>
             <el-dialog v-model="dialogVisible" @close="bgCancel()" title="Add Process Route" width="30%">
                 <el-form :model="form" label-width="120px">
-                    <el-form-item label="Activity zone">
-                        <el-select v-model="form.id" placeholder="please select your station">
-                            <el-option label="station one" value="shanghai" />
-                            <el-option label="station two" value="beijing" />
-                        </el-select>
-                    </el-form-item>
                     <el-form-item label="Activity name">
                         <el-input v-model="form.name" />
                     </el-form-item>
-                    <el-form-item label="calagory">
-                        <el-radio-group v-model="form.calagory">
-                            <el-radio label="only storge" value="chonse1" />
-                            <el-radio label="check and storage" value="chonse2" />
-                        </el-radio-group>
+                    <el-form-item label="Activity name">
+                        <el-input v-model="form.date" />
                     </el-form-item>
-
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -30,31 +20,26 @@
                 </template>
             </el-dialog>
         </div>
-        <div id="routeContioner">
+        <div id='routeContioner'>
             <div class="routeTable">
-                <el-table :data="tableData" style="width: 100%">
-                    <el-table-column label="id" prop="id" />
+                <el-table :data="filterTableData" style="width: 100%">
+                    <el-table-column label="Date" prop="date" />
                     <el-table-column label="Name" prop="name" />
-                    <el-table-column label="calagory" prop="calagory" />
-                    <el-table-column label="storageChart" prop="storageChart" />
                     <el-table-column align="right">
                         <template #header>
+                            <el-input v-model="search" size="small" placeholder="Type to search" />
                             <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="Share">Add
                                 item</el-button>
                         </template>
                         <template #default="scope">
                             <el-button-group style="width:180px;">
-                                <el-button type="primary" :icon="Edit" />
+                                <el-button type="primary" :icon="Edit" @click="tableEdit(scope.$index, scope.row)" />
                                 <el-button type="primary" :icon="Share" />
                                 <el-button type="danger" :icon="Delete" @click="tableDelete(scope.$index, scope.row)" />
                             </el-button-group>
                         </template>
                     </el-table-column>
                 </el-table>
-            </div>
-            <div class="routesAction">
-                <el-button type="primary" :icon="Edit" >submit</el-button>
-                                <el-button type="primary" :icon="Share" >cancel</el-button>
             </div>
         </div>
     </div>
@@ -70,42 +55,29 @@ import {
     Share,
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import request from '../../request/request'
 import router from '@/router';
-import { useRoute } from 'vue-router';
-import { stringLiteral } from '@babel/types';
-//<--------------获取id-------->
-var id = ref()
-const getId = () => {
-    const route = useRoute();
-    id = ref(route.query.name1);
-    console.log("name:" + route.query.name1);
-    console.log("id:" + id.value);
-}
-getId()
 
-
-//<-----------添加新的station------>
 // do not use same name with ref
 const form = reactive({
-    id: '',
     name: '',
-    calagory: 'only',
-    storageChart: [{
-        plcName: '',
-        min: 0,
-        length: 0
-    }]
+    date: '',
+    date1: '',
+    date2: '',
+    delivery: false,
+    type: [],
+    resource: '',
+    desc: '',
 })
 
 const dialogConfirm = (form: any) => {
     console.log("form confirm");
-    const station = {
-        id: form.id,
+    const user = {
         name: form.name,
-        calagory: form.calagory,
-        storageChart: form.storageChart,
+        date: form.date,
+        address: ''
     }
-    tableData.push(station)
+    tableData.push(user)
 }
 const dialogCancel = () => {
     console.log("two methods is ok");
@@ -134,6 +106,7 @@ const tableDelete = (index: number, row: User) => {
                 type: 'success',
                 message: 'Delete completed',
             })
+            tableData.splice(index,1)
             console.log("sccess delete" + row);
         })
         .catch(() => {
@@ -144,10 +117,17 @@ const tableDelete = (index: number, row: User) => {
         })
 }
 const tableAdd = () => {
-    // dialogVisible=ref(true)
     console.log("two methods is ok");
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(10px)'
+}
+const tableEdit = (index: number, row: User) => {
+    console.log("edit");
+    router.push({
+        path: 'Process_RouteEdit',
+        query: { name1: row.name }
+
+    })
 }
 const bgCancel = () => {
     var popupbg = document.getElementById('routeContioner')
@@ -156,6 +136,14 @@ const bgCancel = () => {
 
 
 
+const search = ref('')
+const filterTableData = computed(() =>
+    tableData.filter(
+        (data) =>
+            !search.value ||
+            data.name.toLowerCase().includes(search.value.toLowerCase())
+    )
+)
 const handleEdit = (index: number, row: User) => {
     console.log(index, row)
 }
@@ -163,69 +151,27 @@ const handleDelete = (index: number, row: User) => {
     console.log(index, row)
 }
 
-interface address {
-    plcName: string
-    min: number
-    length: number
-}
-//table的内容
 let tableData = reactive(
     [
         {
+            date: '2016-05-03',
             name: 'Tom',
-            id: 'a-1',
-            calagory: 'only',
-            storageChart: [{
-                plcName: 'plc1',
-                min: 1,
-                length: 2
-            }, {
-                plcName: 'plc2',
-                min: 2,
-                length: 3
-            }]
+            address: 'No. 189, Grove St, Los Angeles',
         },
         {
-            name: 'Tom',
-            id: 'a-3',
-            calagory: 'only',
-            storageChart: [{
-                plcName: 'plc1',
-                min: 1,
-                length: 2
-            }, {
-                plcName: 'plc2',
-                min: 2,
-                length: 3
-            }]
+            date: '2016-05-02',
+            name: 'John',
+            address: 'No. 189, Grove St, Los Angeles',
         },
         {
-            name: 'Tom',
-            id: 'a-2',
-            calagory: 'only',
-            storageChart: [{
-                plcName: 'plc1',
-                min: 1,
-                length: 2
-            }, {
-                plcName: 'plc2',
-                min: 2,
-                length: 3
-            }]
+            date: '2016-05-04',
+            name: 'Morgan',
+            address: 'No. 189, Grove St, Los Angeles',
         },
         {
-            name: 'Tom',
-            id: 'a-1-2',
-            calagory: 'only',
-            storageChart: [{
-                plcName: 'plc1',
-                min: 1,
-                length: 2
-            }, {
-                plcName: 'plc2',
-                min: 2,
-                length: 3
-            }]
+            date: '2016-05-01',
+            name: 'Jessy',
+            address: 'No. 189, Grove St, Los Angeles',
         },
     ]
 )
