@@ -7,6 +7,7 @@ import Process_RouteEdit from '../views/Home/Process_RouteEdit.vue'
 import Product_Query from '../views/Home/Product_Query.vue'
 import UserInfo from '../views/Home/UserInfo.vue'
 import Analysize from '../views/Home/Analysize.vue'
+import PlcInfo from '../views/Home/PlcInfo.vue'
 import Register from '../views/register.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
           name: "Analysize",
           component: Analysize
         },
+        {
+          path: "/plcInfo",
+          name: "PlcInfo",
+          component: PlcInfo
+        },
       ],
     },
     {
@@ -50,7 +56,7 @@ const router = createRouter({
       component: () => import('../views/Navbar.vue')
     },
     {
-      path: '/loginr',
+      path: '/login',
       name: 'login',
       component: () => import('../views/login.vue')
     },

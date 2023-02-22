@@ -14,7 +14,8 @@
             <div class="scanDiv">
                 <div style="background-color: blue;display:inline-block;left:0;width: 200px;height: 100%;"><span>产品编码</span>
                 </div>
-                <el-input v-model="scanInput" :autofocus="true" @keyup.enter.native="scanSubmit()" style="display:inline;"
+                <!-- <el-input v-model="scanInput" :autofocus="true" @keyup.enter.native="scanSubmit()" style="display:inline;" -->
+                <el-input v-model="scanInput" v-focus @keyup.enter.native="scanSubmit()" style="display:inline;"
                     size="large"></el-input>
                 <div style="background-color: blue;display:inline-block;right: 0;width: 200px;height: 100%;">
                     <button>确定</button></div>
@@ -69,6 +70,7 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
+import { useMounted } from '@vueuse/core';
 const scanInput = ref('')
 const scanSubmit = () => {
     //提交scanInput的内容
@@ -76,6 +78,14 @@ const scanSubmit = () => {
     //如果提交失败就清空，不然保留，算了还是一直保留吧
     scanInput.value = ''
 }
+// 注册一个全局自定义指令 `v-focus`
+const vFocus = {
+  mounted(el:any) {
+    // 获取input，并调用其focus()方法
+    el.querySelector('input').focus()
+  }
+}
+
 
 const dialogCancel = () => {
     console.log("two methods is ok");

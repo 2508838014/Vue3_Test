@@ -48,6 +48,7 @@ request.interceptors.response.use(
     }
     console.log(res);
     //当权限验证不通过的时候给出提示
+    
     if (res.code === "401") {
         ElMessage({
             message: res.msg,
@@ -55,7 +56,7 @@ request.interceptors.response.use(
         });
         router.push("/login");
     }
-    //前端返回的res直接赋值的话，需要.data，如果直接给res就没有有
+    //前端返回的res直接赋值的话，需要.data，如果直接给res就不需要
     return response;
   },
   (error) => {

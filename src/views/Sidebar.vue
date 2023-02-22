@@ -20,7 +20,9 @@
               <el-menu-item index="1-1">工艺流程查看</el-menu-item> 
             </router-link>
             
-            <el-menu-item index="1-2">item two</el-menu-item>
+            <router-link :to="{name: 'PlcInfo'}">
+              <el-menu-item index="1-2">plc信息登记</el-menu-item> 
+            </router-link>
 
         </el-sub-menu>
         <el-sub-menu index="2">
@@ -28,7 +30,7 @@
             <el-icon><location /></el-icon>
           <span>流程管控</span>
           </template>
-            <router-link :to="{name: 'Product_Query'}">
+            <router-link  :to="{name: 'Product_Query'}">
               <el-menu-item index="2-1">在制品查询</el-menu-item> 
             </router-link>
         </el-sub-menu>

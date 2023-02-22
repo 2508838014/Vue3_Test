@@ -21,21 +21,25 @@
             </el-dialog>
         </div>
         <div id='routeContioner'>
+            <div>
+                <span>Recipes</span>
+            </div>
             <div class="routeTable">
                 <el-table :data="filterTableData" style="width: 100%">
-                    <el-table-column label="Date" prop="date" />
                     <el-table-column label="Name" prop="name" />
-                    <el-table-column align="right">
+                    <el-table-column label="Date" prop="date" />
+                    <el-table-column label="Remark" prop="remark" />
+                    <el-table-column>
                         <template #header>
                             <el-input v-model="search" size="small" placeholder="Type to search" />
-                            <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="Share">Add
-                                item</el-button>
+                            <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="AddLocation">Add
+                                recipe</el-button>
                         </template>
                         <template #default="scope">
-                            <el-button-group style="width:180px;">
-                                <el-button type="primary" :icon="Edit" @click="tableEdit(scope.$index, scope.row)" />
-                                <el-button type="primary" :icon="Share" />
-                                <el-button type="danger" :icon="Delete" @click="tableDelete(scope.$index, scope.row)" />
+                            <el-button-group style="width:260px;">
+                                <el-button type="primary" :icon="Edit" @click="tableEdit(scope.$index, scope.row)" >Edit</el-button>
+                                <el-button type="primary" :icon="CopyDocument" @click="tableCopy(scope.$index, scope.row)">Copy</el-button>
+                                <el-button type="danger" :icon="Delete" @click="tableDelete(scope.$index, scope.row)" >Delete</el-button>
                             </el-button-group>
                         </template>
                     </el-table-column>
@@ -50,11 +54,13 @@ import { computed, ref, reactive } from 'vue'
 import {
     ArrowLeft,
     ArrowRight,
+    CopyDocument,
+    AddLocation,
     Delete,
     Edit,
     Share,
 } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { dateEquals, datePickTypes, ElMessage, ElMessageBox } from 'element-plus'
 import request from '../../request/request'
 import router from '@/router';
 
@@ -75,7 +81,7 @@ const dialogConfirm = (form: any) => {
     const user = {
         name: form.name,
         date: form.date,
-        address: ''
+        remark: ""
     }
     tableData.push(user)
 }
@@ -89,7 +95,7 @@ let dialogVisible = ref(false)
 interface User {
     date: string
     name: string
-    address: string
+    remark: string
 }
 const tableDelete = (index: number, row: User) => {
     ElMessageBox.confirm(
@@ -121,8 +127,19 @@ const tableAdd = () => {
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(10px)'
 }
+const tableCopy = (index: number, row: User) => {
+    let aData = new Date();    
+    let dateValue = aData.getFullYear() + "-" + (aData.getMonth() + 1) + "-" + aData.getDate();
+    console.log(dateValue)
+    let temp={
+        name:row.name+'_copy',
+        // date:Date.now().toString(),
+        date:dateValue,
+        remark:row.remark
+    }
+    tableData.push(temp)
+}
 const tableEdit = (index: number, row: User) => {
-    console.log("edit");
     router.push({
         path: 'Process_RouteEdit',
         query: { name1: row.name }
@@ -156,22 +173,22 @@ let tableData = reactive(
         {
             date: '2016-05-03',
             name: 'Tom',
-            address: 'No. 189, Grove St, Los Angeles',
+            remark: 'No. 189, Grove St, Los Angeles',
         },
         {
             date: '2016-05-02',
             name: 'John',
-            address: 'No. 189, Grove St, Los Angeles',
+            remark: 'No. 189, Grove St, Los Angeles',
         },
         {
             date: '2016-05-04',
             name: 'Morgan',
-            address: 'No. 189, Grove St, Los Angeles',
+            remark: 'No. 189, Grove St, Los Angeles',
         },
         {
             date: '2016-05-01',
             name: 'Jessy',
-            address: 'No. 189, Grove St, Los Angeles',
+            remark: 'No. 189, Grove St, Los Angeles',
         },
     ]
 )

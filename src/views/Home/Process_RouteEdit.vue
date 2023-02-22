@@ -5,8 +5,8 @@
                 <el-form :model="form" label-width="120px">
                     <el-form-item label="Activity zone">
                         <el-select v-model="form.id" placeholder="please select your station">
-                            <el-option label="station one" value="shanghai" />
-                            <el-option label="station two" value="beijing" />
+
+                            <el-option v-for="item in stationOptions" :key="item.stations" :value="item.stations" />
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Activity name">
@@ -53,8 +53,8 @@
                 </el-table>
             </div>
             <div class="routesAction">
-                <el-button type="primary" :icon="Edit" >submit</el-button>
-                                <el-button type="primary" :icon="Share" >cancel</el-button>
+                <el-button type="primary" @click="routerSubmit()">submit</el-button>
+                <el-button type="primary" @click="routerCancel()">cancel</el-button>
             </div>
         </div>
     </div>
@@ -73,6 +73,9 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import { useRoute } from 'vue-router';
 import { stringLiteral } from '@babel/types';
+import request from '../../request/request'
+import Process_Route from './Process_Route.vue';
+import { method } from 'lodash';
 //<--------------获取id-------->
 var id = ref()
 const getId = () => {
@@ -82,6 +85,21 @@ const getId = () => {
     console.log("id:" + id.value);
 }
 getId()
+//<-----------Router Actions------>
+const routerSubmit=()=>{
+    // request.post(
+    //    '/recipe/edit/submit',
+    //     tableData
+    // ).then(res=>{
+    //     router.push('Process_Route')  
+    // },(error)=>{
+    //     console.log("submit fail");
+    // })
+    router.push('Process_Route')   
+}
+const routerCancel=()=>{    
+    router.push('Process_Route')   
+}
 
 
 //<-----------添加新的station------>
@@ -110,6 +128,32 @@ const dialogConfirm = (form: any) => {
 const dialogCancel = () => {
     console.log("two methods is ok");
 }
+//获取所有的staions，用于新增站点
+const getStations = () => {
+    if (localStorage.getItem("stations") === null) {
+        request.post("/routeEdit", id).then(res => {
+            stationOptions = res.data
+            localStorage.setItem("stations", JSON.stringify(res.data))
+        })
+    } else {
+        stationOptions = JSON.parse(localStorage.getItem("stations") || '{}')
+    }
+}
+
+let stationOptions = ref([{
+    stations: 'station1',
+},{
+    stations: 'station2',
+}, {
+    stations: 'station3',
+}, {
+    stations: 'station4',
+}, {
+    stations: 'station5',
+}, {
+    stations: 'station6',
+},
+])
 
 
 
