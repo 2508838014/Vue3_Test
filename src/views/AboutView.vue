@@ -1,13 +1,14 @@
 
 <template>
   <div>
-    <button onclick="add()">添加节点,并存储在localStorage中</button>
+    <!-- <button onclick="add()">添加节点,并存储在localStorage中</button> -->
     <div id="mountNode"></div>
   </div>
 </template>
   
   <!-- /* 引入 G6 */ -->
-<script lang="ts" setup>
+<script>
+import G6 from '@antv/g6';
 let count = 0
 // 定义数据源
 const data = {
@@ -42,49 +43,49 @@ graph.data(data);
 // 渲染图
 graph.render();
 
-function add() {
-  count += 1
-  let modelNode = {
-    id: count.toString(),
-    x: 10,
-    y: 10,
-  }
-  // 赋值，边的基本样式
-  let modelEdge = {
-    source: 'node1',
-    target: count.toString(),
-  }
+// function add() {
+//   count += 1
+//   let modelNode = {
+//     id: count.toString(),
+//     x: 10,
+//     y: 10,
+//   }
+//   // 赋值，边的基本样式
+//   let modelEdge = {
+//     source: 'node1',
+//     target: count.toString(),
+//   }
 
-  // 给g6的graph实例，添加node类型的新节点
-  graph.addItem('node', modelNode)
-  // 将节点对象，push到data对象中
-  data.nodes.push(modelNode)
-  // 给g6的graph实例，添加edge类型的边
-  graph.addItem('edge', modelEdge)
-  // 将边对象，push到data对象中
-  data.edges.push(modelEdge)
-  // -----------------问题来了----------------
-  // 1.此时直接调用JSON.stringify，会出现循环引用错误
-  // window.localStorage.setItem('g6data', JSON.stringify(data))
+//   // 给g6的graph实例，添加node类型的新节点
+//   graph.addItem('node', modelNode)
+//   // 将节点对象，push到data对象中
+//   data.nodes.push(modelNode)
+//   // 给g6的graph实例，添加edge类型的边
+//   graph.addItem('edge', modelEdge)
+//   // 将边对象，push到data对象中
+//   data.edges.push(modelEdge)
+//   // -----------------问题来了----------------
+//   // 1.此时直接调用JSON.stringify，会出现循环引用错误
+//   // window.localStorage.setItem('g6data', JSON.stringify(data))
 
-  // 2.在网上搜了一段解决办法，确实没有发生循环引用错误了。但是有了新的问题，
-  //   当不停地点击按钮，增加节点时，localStorage中的edges的值会变成null
-  let cache = []
-  let str = JSON.stringify(data, function (key, value) {
-    if (typeof value === 'object' && value !== null) {
-      if (cache.indexOf(value) !== -1) {
-        // 移除
-        return
-      }
-      // 收集所有的值
-      cache.push(value)
-    }
-    return value
-  })
-  cache = null // 清空变量，便于垃圾回收机制回收
-  window.localStorage.setItem('g6data', str)
+//   // 2.在网上搜了一段解决办法，确实没有发生循环引用错误了。但是有了新的问题，
+//   //   当不停地点击按钮，增加节点时，localStorage中的edges的值会变成null
+//   let cache = []
+//   let str = JSON.stringify(data, function (key, value) {
+//     if (typeof value === 'object' && value !== null) {
+//       if (cache.indexOf(value) !== -1) {
+//         // 移除
+//         return
+//       }
+//       // 收集所有的值
+//       cache.push(value)
+//     }
+//     return value
+//   })
+//   cache = null // 清空变量，便于垃圾回收机制回收
+//   window.localStorage.setItem('g6data', str)
 
-  console.log(data)
-  graph.layout()
-}
+//   console.log(data)
+//   graph.layout()
+// }
 </script>

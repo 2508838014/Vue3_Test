@@ -8,6 +8,7 @@ import Product_Query from '../views/Home/Product_Query.vue'
 import UserInfo from '../views/Home/UserInfo.vue'
 import Analysize from '../views/Home/Analysize.vue'
 import PlcInfo from '../views/Home/PlcInfo.vue'
+import testcontioner from '../views/Home/contioner.vue'
 import Register from '../views/register.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,11 @@ const router = createRouter({
           name: "PlcInfo",
           component: PlcInfo
         },
+        {
+          path: "/test1",
+          name: "contioner",
+          component: testcontioner
+        },
       ],
     },
     {
@@ -71,11 +77,11 @@ const router = createRouter({
       component: () => import('../views/getinfo.vue')
     },
 
-    {
-      path: '/about',
-      name: 'about',
-      component: () => import('../views/AboutView.vue')
-    },
+    // {
+    //   path: '/about',
+    //   name: 'about',
+    //   component: () => import('../views/AboutView.vue')
+    // },
     {
       path: '/side',
       name: 'Sidebar',
