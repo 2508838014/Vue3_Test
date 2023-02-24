@@ -4,7 +4,8 @@
         
         <el-affix :offset="0">
             <div class="logo">
-                <img class="logo" src="../../public/logo.svg">
+                <!-- <img class="logo" src="../../public/logo.svg"> -->
+                <h1 style="margin:15px;font-size: 60px;top=0;bottom: 0;right: 0;left: 0;color: black;" >Nestar</h1  >
             </div>
             <div class="title">
                 <h2 style="margin: 0;" >Manufacturing Execution System</h2>
@@ -12,7 +13,7 @@
             </div>
             <div>
                 <router-link :to="{ name: 'login' }" class="loginout">
-                    <!-- {{ loginOut }} -->logout
+                    <!-- {{ loginOut }} -->登陆人员姓名|登出
                 </router-link>
             </div>
         </el-affix>
@@ -41,21 +42,21 @@
     float: left;
     padding-top: 10px;
     /* margin-top: 10px; */
-    padding-left: 260px;
+    padding-left: 240px;
     margin-bottom: auto;
     padding-bottom: 0%;
     /* width: calc(100% - 260px); */
     width: 1000px;
     height: 90px;
     font-size: 30px;
-    color:antiquewhite;
+    color:white;
 }
 .loginout{
     float:right;
-    margin-right: 0;
-    padding-top: 10px;
+    margin-right: 40px;
+    padding-top: 20px;
     /* margin-top: 10px; */
-    padding-left: 260px;
+    padding-left: 240px;
     margin-bottom: auto;
     padding-bottom: 0%;
     height: 90px;

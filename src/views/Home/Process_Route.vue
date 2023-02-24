@@ -1,12 +1,12 @@
 <template>
     <div style="height:100%;width: 100%;">
         <div>
-            <el-dialog v-model="dialogVisible" @close="bgCancel()" title="Add Process Route" width="30%">
-                <el-form :model="form" label-width="120px">
-                    <el-form-item label="Activity name">
+            <el-dialog v-model="dialogVisible" @close="bgCancel()" title="Add Recipe" width="30%">
+                <el-form :model="form" label-width="140px">
+                    <el-form-item label="Recipe name">
                         <el-input v-model="form.name" />
                     </el-form-item>
-                    <el-form-item label="Activity name">
+                    <el-form-item label="Recipe description">
                         <el-input v-model="form.date" />
                     </el-form-item>
                 </el-form>
@@ -21,17 +21,17 @@
             </el-dialog>
         </div>
         <div id='routeContioner'>
-            <div>
-                <span>Recipes</span>
+            <div style="padding:20px 30px 10px 30px">
+                <h3 >Recipes</h3>
             </div>
             <div class="routeTable">
-                <el-table :data="filterTableData" style="width: 100%">
+                <el-table :data="filterTableData" style="width: 80%;margin-left: 10%;">
                     <el-table-column label="Name" prop="name" />
-                    <el-table-column label="Date" prop="date" />
-                    <el-table-column label="Remark" prop="remark" />
-                    <el-table-column>
+                    <el-table-column label="Last motified date" prop="date" />
+                    <el-table-column label="Description" prop="remark" />
+                    <el-table-column style="width: 280px;">
                         <template #header>
-                            <el-input v-model="search" size="small" placeholder="Type to search" />
+                            <!-- <el-input v-model="search" size="small" placeholder="Type to search" /> -->
                             <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="AddLocation">Add
                                 recipe</el-button>
                         </template>
@@ -130,7 +130,6 @@ const tableAdd = () => {
 const tableCopy = (index: number, row: User) => {
     let aData = new Date();    
     let dateValue = aData.getFullYear() + "-" + (aData.getMonth() + 1) + "-" + aData.getDate();
-    console.log(dateValue)
     let temp={
         name:row.name+'_copy',
         // date:Date.now().toString(),
@@ -171,24 +170,24 @@ const handleDelete = (index: number, row: User) => {
 let tableData = reactive(
     [
         {
-            date: '2016-05-03',
-            name: 'Tom',
-            remark: 'No. 189, Grove St, Los Angeles',
+            date: '2022-05-03',
+            name: 'reccipe1',
+            remark: '配方1',
         },
         {
-            date: '2016-05-02',
-            name: 'John',
-            remark: 'No. 189, Grove St, Los Angeles',
+            date: '2022-05-02',
+            name: 'reccipe2',
+            remark: '配方2',
         },
         {
-            date: '2016-05-04',
-            name: 'Morgan',
-            remark: 'No. 189, Grove St, Los Angeles',
+            date: '2022-05-04',
+            name: 'reccipe3',
+            remark: '配方3',
         },
         {
-            date: '2016-05-01',
-            name: 'Jessy',
-            remark: 'No. 189, Grove St, Los Angeles',
+            date: '2023-01-01',
+            name: 'reccipe5',
+            remark: '配方4',
         },
     ]
 )
@@ -203,6 +202,6 @@ let tableData = reactive(
     border-radius: 20px;
 }
 .routeTable{
-    padding-top: 80px;
+
 }
 </style>

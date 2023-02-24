@@ -12,13 +12,18 @@
         </div>
         <div id='routeContioner'>
             <div class="scanDiv">
-                <div style="background-color: blue;display:inline-block;left:0;width: 200px;height: 100%;"><span>产品编码</span>
+
+                    <div style="display:inline-block;left:0;width: 100px;height: 100%;"><span>产品编码:</span>
+                    <!-- <div class="ml-3 w-35 text-gray-600 inline-flex items-center"><span>产品编码</span> -->
                 </div>
                 <!-- <el-input v-model="scanInput" :autofocus="true" @keyup.enter.native="scanSubmit()" style="display:inline;" -->
                 <el-input v-model="scanInput" v-focus @keyup.enter.native="scanSubmit()" style="display:inline;"
                     size="large"></el-input>
-                <div style="background-color: blue;display:inline-block;right: 0;width: 200px;height: 100%;">
-                    <button>确定</button></div>
+                <div style="display:inline-block;right: 0;width: 200px;height: 100%;">
+                    <el-button size="large" style="margin-left: 30px;">确认</el-button></div>
+                    
+
+
             </div>
             <div class="infoDescription">
                 <el-descriptions title="Produc Information" :column="1" border v-model="infosDes">
@@ -205,10 +210,10 @@ let tableData = reactive(
 
 //<------------description----->
 let infosDes = ref({
-    productLabel: '',
-    productFamily: '',
-    productRecipe: '',
-    lastUpdateTime: '',
+    productLabel: '产品编号',
+    productFamily: '产品系列',
+    productRecipe: '产品配方',
+    lastUpdateTime: 'log上次更新时间',
 })
 </script>
 
@@ -227,7 +232,8 @@ let infosDes = ref({
     padding-top: 40px;
     left: 0px;
     right: 0px;
-    width: 1200px;
+    /* width: 800px; */
+    align-items: center;
     /* background-color: blueviolet; */
     /* display: inline; */
 }

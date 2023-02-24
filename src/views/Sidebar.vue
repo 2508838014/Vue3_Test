@@ -13,15 +13,15 @@
         <el-sub-menu index="1">
           <template #title>
             <el-icon><location /></el-icon>
-            <span>基本信息</span>
+            <span>流程管理</span>
           </template>
 
             <router-link :to="{name: 'Process_Route'}">
-              <el-menu-item index="1-1">工艺流程查看</el-menu-item> 
+              <el-menu-item index="1-1">工艺配方查看</el-menu-item> 
             </router-link>
             
             <router-link :to="{name: 'PlcInfo'}">
-              <el-menu-item index="1-2">plc信息登记</el-menu-item> 
+              <el-menu-item index="1-2">工艺流程编辑</el-menu-item> 
             </router-link>
             <router-link :to="{name: 'contioner'}">
               <el-menu-item index="1-3">plc信息登记</el-menu-item> 
@@ -30,10 +30,10 @@
         <el-sub-menu index="2">
           <template #title>
             <el-icon><location /></el-icon>
-          <span>流程管控</span>
+          <span>产品信息</span>
           </template>
             <router-link  :to="{name: 'Product_Query'}">
-              <el-menu-item index="2-1">在制品查询</el-menu-item> 
+              <el-menu-item index="2-1">产品信息</el-menu-item> 
             </router-link>
         </el-sub-menu>
         <el-sub-menu index="3">
@@ -51,7 +51,10 @@
           <span>信息统计</span>
           </template>
             <router-link :to="{name: 'Analysize'}">
-              <el-menu-item index="4-1">图标样式</el-menu-item> 
+              <el-menu-item index="4-1">产量统计</el-menu-item> 
+            </router-link>
+            <router-link :to="{name: 'Analysize'}">
+              <el-menu-item index="4-1">产品质量分析</el-menu-item> 
             </router-link>
         </el-sub-menu>
       </el-menu>

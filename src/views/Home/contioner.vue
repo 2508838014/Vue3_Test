@@ -8,33 +8,12 @@
     
     <!-- /* 引入 G6 */ -->
   <script lang="ts" setup>
-  import G6 from '@antv/g6';
-  import insertCss from 'insert-css';
-import { onMounted } from 'vue';
+  import G6, { Edge } from '@antv/g6';
+import { constant } from 'lodash';
+import { onMounted, reactive, ref } from 'vue';
 
 
-insertCss(`
-  #contextMenu {
-    position: absolute;
-    list-style-type: none;
-    padding: 10px 8px;
-    left: -150px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border: 1px solid #e2e2e2;
-    border-radius: 4px;
-    font-size: 12px;
-    color: #545454;
-  }
-  #contextMenu li {
-    cursor: pointer;
-		list-style-type:none;
-    list-style: none;
-    margin-left: 0px;
-  }
-  #contextMenu li:hover {
-    color: #aaa;
-  }
-`);
+
 
 
   let count = 0
@@ -42,21 +21,21 @@ insertCss(`
   const data = {
   nodes: [
     {
-      id: 'node1',
+      id: '1',
       label: 'node1',
       x: 200,
       y: 100,
       type: 'rect',
     },
     {
-      id: 'node2',
+      id: '2',
       label: 'node2',
       x: 250,
       y: 250,
       type: 'rect',
     },
     {
-      id: 'node3',
+      id: '3',
       label: 'node3',
       x: 350,
       y: 100,
@@ -65,13 +44,13 @@ insertCss(`
   ],
   edges: [
     {
-      source: 'node1',
-      target: 'node2',
-      label: 'Test Label',
+      source: '1',
+      target: '2',
+      label: '>',
     },
     {
-      source: 'node1',
-      target: 'node3',
+      source: '1',
+      target: '3',
       label: 'Test Label 2',
     },
   ],
@@ -80,6 +59,9 @@ insertCss(`
   // 渲染图
 //   graph.render();
 onMounted(()=>{
+
+
+
 //       // 创建 G6 图实例
 //   const graph = new G6.Graph({
 //     container: 'mountNode', // 指定图画布的容器 id，与第 9 行的容器对应
@@ -105,8 +87,11 @@ document.getElementById('mountNode')!.appendChild(descriptionDiv);
 const container = document.getElementById('mountNode');
 const width = container!.scrollWidth;
 const height = container!.scrollHeight || 500;
+let dataCount=ref(tableData.length)
 
 const contextMenu = new G6.Menu({
+
+  
   getContent(evt) {
     let header;
     if (evt!.target && evt!.target.isCanvas && evt!.target.isCanvas()) {
@@ -116,17 +101,33 @@ const contextMenu = new G6.Menu({
       header = `${itemType.toUpperCase()} ContextMenu`;
     }
     return `
-    <h3>${header}</h3>
+ 
     <ul>
-      <li title='1'>li 1</li>
-      <li title='2'>li 2</li>
-      <li>li 3</li>
+      <li>增加</li>
+      <li>删除</li>
+      <li>修改</li> 
       <li>li 4</li>
       <li>li 5</li>
     </ul>`;
   },
   handleMenuClick: (target, item) => {
-    console.log(target, item);
+    console.log(target.nodeValue);
+    
+    console.log("target:"+target);
+    console.log("item:"+item);
+    console.log("target,item:"+target, item);
+    console.log("ceshi"+item._cfg?.id);
+    console.log("ceshi2"+target.innerHTML);
+    if(target.innerHTML==='增加'){
+      
+      g6_add(Number.parseInt(item._cfg?.id||'0')+1,item._cfg?.model?.x||0,(item._cfg?.model?.y||0)+100)
+    }else if(target.innerHTML==='删除'){
+
+    }else if(target.innerHTML==='修改'){
+
+    }
+    
+    
   },
   // offsetX and offsetY include the padding of the parent container
   // 需要加上父级容器的 padding-left 16 与自身偏移量 10
@@ -167,13 +168,60 @@ const graph = new G6.Graph({
     },
   },
   modes: {
-    default: ['drag-node'],
+    default: ['drag-canvas', 'zoom-canvas', 'drag-node'], // 允许拖拽画布、放缩画布、拖拽节点
   },
 });
 
   // 读取数据
   graph.data(data);
     graph.render()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const g6_add=(index:number,xTarget:number,yTarget:number)=>{
+      if(index<=data.nodes.length){
+        index=data.nodes.length+1
+      }
+  let modelNode={
+    id: (index).toString(),
+      label: (index).toString(),
+      x: xTarget,
+      y: yTarget,
+      type: 'rect',
+  }
+  console.log("dataCount:"+dataCount.value);
+  
+  let  modelEdge={
+    source:(index-1).toString(),
+    target:(index).toString(),
+    label:'line3'
+  }
+  data.nodes[0].label='999'
+      // 给g6的graph实例，添加node类型的新节点
+      graph.addItem('node', modelNode)
+    // 将节点对象，push到data对象中
+    data.nodes.push(modelNode)
+    // 给g6的graph实例，添加edge类型的边
+    graph.addItem('edge', modelEdge)
+    // 将边对象，push到data对象中
+    data.edges.push(modelEdge)
+    graph.layout()
+
+}
+
+    
 })
 
 
@@ -208,13 +256,13 @@ const graph = new G6.Graph({
 
 
 
-
-
-
-
-
-
-
+const getEdge=(sourceTarget:string)=>{
+}
+const readtype=()=>{
+  console.log("type:"+typeof(data.edges));
+  
+}
+readtype()
 
   // function add() {
   //   count += 1
@@ -229,14 +277,14 @@ const graph = new G6.Graph({
   //     target: count.toString(),
   //   }
   
-  //   // 给g6的graph实例，添加node类型的新节点
-  //   graph.addItem('node', modelNode)
-  //   // 将节点对象，push到data对象中
-  //   data.nodes.push(modelNode)
-  //   // 给g6的graph实例，添加edge类型的边
-  //   graph.addItem('edge', modelEdge)
-  //   // 将边对象，push到data对象中
-  //   data.edges.push(modelEdge)
+    // // 给g6的graph实例，添加node类型的新节点
+    // graph.addItem('node', modelNode)
+    // // 将节点对象，push到data对象中
+    // data.nodes.push(modelNode)
+    // // 给g6的graph实例，添加edge类型的边
+    // graph.addItem('edge', modelEdge)
+    // // 将边对象，push到data对象中
+    // data.edges.push(modelEdge)
   //   // -----------------问题来了----------------
   //   // 1.此时直接调用JSON.stringify，会出现循环引用错误
   //   // window.localStorage.setItem('g6data', JSON.stringify(data))
@@ -261,8 +309,99 @@ const graph = new G6.Graph({
   //   console.log(data)
   //   graph.layout()
   // }
+
+
+
+  //table的内容
+let tableData = reactive(
+    [
+        {
+            name: 'Tom',
+            id: 'a-1',
+            calagory: 'only',
+            storageChart: [{
+                plcName: 'plc1',
+                min: 1,
+                length: 2
+            }, {
+                plcName: 'plc2',
+                min: 2,
+                length: 3
+            }]
+        },
+        {
+            name: 'Tom',
+            id: 'a-3',
+            calagory: 'only',
+            storageChart: [{
+                plcName: 'plc1',
+                min: 1,
+                length: 2
+            }, {
+                plcName: 'plc2',
+                min: 2,
+                length: 3
+            }]
+        },
+        {
+            name: 'Tom',
+            id: 'a-2',
+            calagory: 'only',
+            storageChart: [{
+                plcName: 'plc1',
+                min: 1,
+                length: 2
+            }, {
+                plcName: 'plc2',
+                min: 2,
+                length: 3
+            }]
+        },
+        {
+            name: 'Tom',
+            id: 'a-1-2',
+            calagory: 'only',
+            storageChart: [{
+                plcName: 'plc1',
+                min: 1,
+                length: 2
+            }, {
+                plcName: 'plc2',
+                min: 2,
+                length: 3
+            }]
+        },
+    ]
+)
   </script>
-  <style>
+<style>
+.g6-component-contextmenu {
+  position: absolute;
+  list-style-type: none;
+  padding: 0px;
+  left: -150px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e2e2;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #545454;
+}
 
+.g6-component-contextmenu ul {
+  margin: 0px;
+  padding: 0px;
+  padding-inline-start: 0px;
+  text-align: center;
+  list-style-type: none;
+}
 
+.g6-component-contextmenu  ul li {
+  padding: 5px 50px;
+  font-size: 12px;
+  list-style-type: none;
+}
+
+.g6-component-contextmenu ul li:hover {
+  background: #e1dddd;
+}
 </style>

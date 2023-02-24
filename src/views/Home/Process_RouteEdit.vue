@@ -5,7 +5,6 @@
                 <el-form :model="form" label-width="120px">
                     <el-form-item label="Activity zone">
                         <el-select v-model="form.id" placeholder="please select your station">
-
                             <el-option v-for="item in stationOptions" :key="item.stations" :value="item.stations" />
                         </el-select>
                     </el-form-item>
@@ -45,7 +44,7 @@
                         <template #default="scope">
                             <el-button-group style="width:180px;">
                                 <el-button type="primary" :icon="Edit" />
-                                <el-button type="primary" :icon="Share" />
+                                <el-button type="primary" :icon="Share" @click="tabletest(scope.$index, scope.row)"/>
                                 <el-button type="danger" :icon="Delete" @click="tableDelete(scope.$index, scope.row)" />
                             </el-button-group>
                         </template>
@@ -163,6 +162,22 @@ interface User {
     name: string
     address: string
 }
+const tabletest = (index: number, row: User) => {
+    tableData.splice(index+1,  0,      {
+            name: 'test',
+            id: 'a-1',
+            calagory: 'only',
+            storageChart: [{
+                plcName: 'plc1',
+                min: 1,
+                length: 2
+            }, {
+                plcName: 'plc2',
+                min: 2,
+                length: 3
+            }]
+        })
+}
 const tableDelete = (index: number, row: User) => {
     ElMessageBox.confirm(
         'This routing will be deleted',
@@ -188,8 +203,6 @@ const tableDelete = (index: number, row: User) => {
         })
 }
 const tableAdd = () => {
-    // dialogVisible=ref(true)
-    console.log("two methods is ok");
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(10px)'
 }

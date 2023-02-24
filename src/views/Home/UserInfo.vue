@@ -30,9 +30,12 @@
 
 
         <div id='routeContioner'>
+            <div style="padding:20px 30px 10px 30px">
+                <h3 >用户信息</h3>
+            </div>
             <div class="routeTable">
-                <span style="padding-left: 40px;">用户信息</span>
-                <el-table :data="filterTableData" max-height="600px" style="width: 100%">
+                <span style="padding-left: 40px;"></span>
+                <el-table :data="filterTableData" max-height="600px" style="width: 80%;margin-left: 10%;">
                     <el-table-column label="id" prop="id" />
                     <el-table-column label="password" prop="password" />
                     <el-table-column label="name" prop="name" />
@@ -52,7 +55,7 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div>
+                <div style="width: 80%;margin-left: 10%;">
                     <el-pagination
       v-model:current-page="currentPage"
       :small="small"
