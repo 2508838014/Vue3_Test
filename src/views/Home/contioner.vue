@@ -8,8 +8,7 @@
     
     <!-- /* 引入 G6 */ -->
   <script lang="ts" setup>
-  import G6, { Edge } from '@antv/g6';
-import { constant } from 'lodash';
+  import G6 from '@antv/g6';
 import { onMounted, reactive, ref } from 'vue';
 
 
@@ -110,6 +109,12 @@ const contextMenu = new G6.Menu({
       <li>li 5</li>
     </ul>`;
   },
+
+
+  
+
+
+
   handleMenuClick: (target, item) => {
     console.log(target.nodeValue);
     
@@ -118,9 +123,49 @@ const contextMenu = new G6.Menu({
     console.log("target,item:"+target, item);
     console.log("ceshi"+item._cfg?.id);
     console.log("ceshi2"+target.innerHTML);
+
+    interface nodeBase{
+      id:string
+      x:number
+      y:number
+      label:string
+      type:string
+    }
     if(target.innerHTML==='增加'){
       
       g6_add(Number.parseInt(item._cfg?.id||'0')+1,item._cfg?.model?.x||0,(item._cfg?.model?.y||0)+100)
+      // const temp={
+      //   id:item._cfg?.id||'',
+      //   label:item._cfg!.model!.label?.toString()||'',
+      //   x:item._cfg?.model?.x||0,
+      //   y:item._cfg?.model?.y||0,
+      //   type:item._cfg?.model?.type||'',
+      // }
+      // const temp2={
+      //   id:item._cfg?.id||'',
+      //   label:item._cfg!.model!.label?.toString()||'',
+      //   x:item._cfg?.model?.x||0,
+      //   y:item._cfg?.model?.y||0,
+      //   type:item._cfg?.model?.type||'',
+      // }
+      
+      // console.log("temp.nodes:"+temp.label);
+      // console.log("temp.nodes:"+temp.id);
+      // console.log("temp.nodes:"+temp.type);
+      // console.log("temp.nodes:"+temp.x);
+      // console.log("temp.nodes:"+temp.y);
+      // console.log("data:id:"+data.nodes[2].id);
+      
+      // console.log("equal:"+(data.nodes[2].id==temp.id).toString());
+      // console.log("equal:"+(data.nodes[2].label==temp.label).toString());
+      // console.log("equal:"+(data.nodes[2].type==temp.type).toString());
+      // console.log("equal:"+(data.nodes[2].x==temp.x));
+      // console.log("equal:"+(data.nodes[2].y==temp.y));
+      
+      // console.log("index"+data.nodes.indexOf( temp))
+        
+      
+      
     }else if(target.innerHTML==='删除'){
 
     }else if(target.innerHTML==='修改'){
@@ -177,37 +222,26 @@ const graph = new G6.Graph({
     graph.render()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //index,xTarget,yTarget:想要生成的id，x,y（tips:index从1开始）//id的作用在于修改
+    //nextNode,sourceNode:想要生成的node的上下节点，用于连线。没有下节点则表示为自己。
+    //刚刚思考了下，不需要上下节点。因为必定添加在最后一位，原来的最后一位id==data.nodes.length
+    //但是还是要判断从哪里开始进行修改label，从index开始，赋值给新的label，后面的就顺序下沿，如果index就是最后一位，其实
     const g6_add=(index:number,xTarget:number,yTarget:number)=>{
-      if(index<=data.nodes.length){
-        index=data.nodes.length+1
-      }
-  let modelNode={
-    id: (index).toString(),
-      label: (index).toString(),
-      x: xTarget,
-      y: yTarget,
+      let max=data.nodes.length
+      let modelNode={
+    id: (max+1).toString(),
+      label: (max+1).toString(),
+      x: data.nodes[max-1].x,
+      y: data.nodes[max-1].x+100,
       type: 'rect',
   }
-  console.log("dataCount:"+dataCount.value);
-  
   let  modelEdge={
-    source:(index-1).toString(),
-    target:(index).toString(),
-    label:'line3'
+    source:(max).toString(),
+    target:(max+1).toString(),
+    label:''
   }
+  
+
   data.nodes[0].label='999'
       // 给g6的graph实例，添加node类型的新节点
       graph.addItem('node', modelNode)
@@ -217,9 +251,34 @@ const graph = new G6.Graph({
     graph.addItem('edge', modelEdge)
     // 将边对象，push到data对象中
     data.edges.push(modelEdge)
-    graph.layout()
+
+
+        //data.nodes[index]时从0开始的
+  for(let i=data.nodes.length-1;i>=index;i--){
+    console.log("i:"+i);
+    console.log("i-1.label:"+data.nodes[i-1].label);
+    data.nodes[i].label=data.nodes[i-1].label;
+  }
+  let nodeLabel=index.toString()
+  data.nodes[index-1].label=nodeLabel
+
+  
+
+    // graph.layout()
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
     
 })
