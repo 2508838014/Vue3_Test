@@ -12,9 +12,6 @@
 import { onMounted, reactive, ref } from 'vue';
 
 
-
-
-
   let count = 0
   // 定义数据源
   const data = {
@@ -134,38 +131,7 @@ const contextMenu = new G6.Menu({
     if(target.innerHTML==='增加'){
       
       g6_add(Number.parseInt(item._cfg?.id||'0')+1,item._cfg?.model?.x||0,(item._cfg?.model?.y||0)+100)
-      // const temp={
-      //   id:item._cfg?.id||'',
-      //   label:item._cfg!.model!.label?.toString()||'',
-      //   x:item._cfg?.model?.x||0,
-      //   y:item._cfg?.model?.y||0,
-      //   type:item._cfg?.model?.type||'',
-      // }
-      // const temp2={
-      //   id:item._cfg?.id||'',
-      //   label:item._cfg!.model!.label?.toString()||'',
-      //   x:item._cfg?.model?.x||0,
-      //   y:item._cfg?.model?.y||0,
-      //   type:item._cfg?.model?.type||'',
-      // }
-      
-      // console.log("temp.nodes:"+temp.label);
-      // console.log("temp.nodes:"+temp.id);
-      // console.log("temp.nodes:"+temp.type);
-      // console.log("temp.nodes:"+temp.x);
-      // console.log("temp.nodes:"+temp.y);
-      // console.log("data:id:"+data.nodes[2].id);
-      
-      // console.log("equal:"+(data.nodes[2].id==temp.id).toString());
-      // console.log("equal:"+(data.nodes[2].label==temp.label).toString());
-      // console.log("equal:"+(data.nodes[2].type==temp.type).toString());
-      // console.log("equal:"+(data.nodes[2].x==temp.x));
-      // console.log("equal:"+(data.nodes[2].y==temp.y));
-      
-      // console.log("index"+data.nodes.indexOf( temp))
-        
-      
-      
+
     }else if(target.innerHTML==='删除'){
 
     }else if(target.innerHTML==='修改'){
@@ -232,7 +198,7 @@ const graph = new G6.Graph({
     id: (max+1).toString(),
       label: (max+1).toString(),
       x: data.nodes[max-1].x,
-      y: data.nodes[max-1].x+100,
+      y: data.nodes[max-1].y+100,
       type: 'rect',
   }
   let  modelEdge={
@@ -252,35 +218,28 @@ const graph = new G6.Graph({
     // 将边对象，push到data对象中
     data.edges.push(modelEdge)
 
+    
 
         //data.nodes[index]时从0开始的
   for(let i=data.nodes.length-1;i>=index;i--){
     console.log("i:"+i);
     console.log("i-1.label:"+data.nodes[i-1].label);
     data.nodes[i].label=data.nodes[i-1].label;
+    graph.updateItem((i+1).toString(),{label:data.nodes[i].label})
   }
-  let nodeLabel=index.toString()
+  // let nodeLabel=index.toString()
+  let nodeLabel="nodeAdd1"
   data.nodes[index-1].label=nodeLabel
-
+  graph.updateItem((index).toString(),{label:data.nodes[index-1].label})
   
 
-    // graph.layout()
+    // graph.update('1',data.nodes[0])
+    // graph.update((index-1).toString(),data.nodes[index-1])
+    graph.updateItem('1',{label:'444'})
+    
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
 })
 
 

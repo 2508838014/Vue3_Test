@@ -24,11 +24,11 @@
 <style scoped>
 
 .cover2 {
-  z-index: 2;
+  z-index: 0;
   position: fixed;
   width: 100%;
   height: 100px;
-  background-color: #545c64;
+  background-color: #004b8c;
 }
 .logo{
     display: inline;

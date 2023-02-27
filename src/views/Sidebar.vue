@@ -2,7 +2,7 @@
 	<div class="cover1">
       <el-menu
         active-text-color="#ffd04b"
-        background-color="#545c64"
+        background-color="#004b8c"
         class="el-menu-vertical-demo"
         default-active="1-1"
         text-color="#fff"
@@ -85,6 +85,6 @@ const handleClose = (key: string, keyPath: string[]) => {
   padding: 0;
   width: 260px;
   height: 100%;
-  background-color: #545c64;
+  background-color: #004b8c;
 }
 </style>
