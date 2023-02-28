@@ -84,7 +84,8 @@ const Getinfo = (ruleForm: any) => {
       router.push('/');
     }
     else {
-      alert("账号不存在，请检查输入");
+      ElMessage.error('账号不存在，请检查输入')
+      // alert("账号不存在，请检查输入");
     }
   }
     , (error) => {

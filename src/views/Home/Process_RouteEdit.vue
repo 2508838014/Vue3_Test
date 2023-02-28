@@ -2,7 +2,7 @@
     <div style="height:100%;width: 100%;">
         <div>
             <el-dialog v-model="dialogVisible" @close="bgCancel()" title="Add Process Route" width="30%">
-                <el-form :model="form" label-width="120px">
+                <el-form id="myform" :model="form" label-width="120px">
                     <el-form-item label="Activity zone">
                         <el-select v-model="form.id" placeholder="please select your station">
                             <el-option v-for="item in stationOptions" :key="item.stations" :value="item.stations" />
@@ -13,11 +13,10 @@
                     </el-form-item>
                     <el-form-item label="calagory">
                         <el-radio-group v-model="form.calagory">
-                            <el-radio label="only storge" value="chonse1" />
-                            <el-radio label="check and storage" value="chonse2" />
+                            <el-radio label="1" >only storage</el-radio>
+                            <el-radio label="check and storage" />
                         </el-radio-group>
                     </el-form-item>
-
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -77,12 +76,10 @@ import {
     Edit,
     Share,
 } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { type FormInstance,ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import { useRoute } from 'vue-router';
-import { stringLiteral } from '@babel/types';
 import request from '../../request/request'
-import Process_Route from './Process_Route.vue';
 import { method } from 'lodash';
 import G6, { Graph } from '@antv/g6';
 import { onMounted } from 'vue';
@@ -114,7 +111,7 @@ const routerCancel = () => {
 
 //<-----------添加新的station------>
 // do not use same name with ref
-const form = reactive({
+const form = ref({
     id: '',
     name: '',
     calagory: 'only',
@@ -211,6 +208,21 @@ const tableAdd = () => {
 const bgCancel = () => {
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(0px)'
+    console.log("重置表单：bgCancel");
+    
+    (<HTMLFormElement>document.getElementById('myform'))!.reset()
+    console.log("form:"+form.value.id);
+    
+    form.value={
+    id: '',
+    name: '',
+    calagory: '',
+    storageChart: [{
+        plcName: '',
+        min: 0,
+        length: 0
+    }]
+}
 }
 
 
@@ -289,32 +301,79 @@ let tableData = reactive(
     ]
 )
 
+const myformRef = ref<FormInstance>()
+
 const dialogConfirm = (form: any) => {
-    console.log("form confirm");
+    if(g6_status.value==1){
+        console.log("form confirm");
     const station = {
         id: form.id,
         name: form.name,
         calagory: form.calagory,
         storageChart: form.storageChart,
     }
+    let max = data.nodes.length
+        let modelNode = {
+            id: (max).toString(),
+            label: (max).toString(),
+            x: data.nodes[max - 1].x,
+            y: data.nodes[max - 1].y + 100,
+            type: 'rect',
+        }
+        let modelEdge = {
+            source: (max - 1).toString(),
+            target: (max).toString(),
+            label: ''
+        }
+        // 给g6的graph实例，添加node类型的新节点
+        graph.addItem('node', modelNode)
+        // 将节点对象，push到data对象中
+        data.nodes.push(modelNode)
+        // 给g6的graph实例，添加edge类型的边
+        graph.addItem('edge', modelEdge)
+        // 将边对象，push到data对象中
+        data.edges.push(modelEdge)
+        //data.nodes[index]时从0开始的
+        for (let i = data.nodes.length - 1; i > g6_id.value; i--) {
+            console.log("i:" + i);
+            console.log("i-1.id:" + data.nodes[i - 1].id);
+            console.log("i-1.label:" + data.nodes[i - 1].label);
+            data.nodes[i].label = data.nodes[i - 1].label;
+            console.log("i.id" + data.nodes[i].id);
+            console.log("i.label" + data.nodes[i].label);
+            graph.updateItem((i).toString(), { label: data.nodes[i - 1].label })
+            console.log("i.label::after" + data.nodes[i].label);
+        }
     tableData.splice(g6_id.value - 1, 0, station)
     graph.update((g6_id.value).toString(), { label: form.id })
     data.nodes[g6_id.value].label = form.id
-    //     let nodeLabel=''
-    //   data.nodes[index-1].label=nodeLabel
-    //   graph.updateItem((index).toString(),{label:data.nodes[index-1].label})
+    g6_id.value=-1
+    g6_status.value=0
+
+myformRef.value?.resetFields()
+    }
+    else if(g6_status.value==2){
+        graph.update((g6_id.value).toString(), { label: form.id })
+        form.value={
+    id: '',
+    name: '',
+    calagory: '',
+    storageChart: [{
+        plcName: '',
+        min: 0,
+        length: 0
+    }]
+}
+    }
+    g6_id.value=-1
+    g6_status.value=0
 }
 
 //<--------------g6 canvas--------->
 let graph: Graph
-
 // 渲染图
 //   graph.render();
 onMounted(() => {
-
-
-
-
     //       // 创建 G6 图实例
     //   const graph = new G6.Graph({
     //     container: 'mountNode', // 指定图画布的容器 id，与第 9 行的容器对应
@@ -333,9 +392,6 @@ onMounted(() => {
     //   });
 
 
-
-
-
     // const descriptionDiv = document.createElement('div');
     // descriptionDiv.id = 'discription';
     // descriptionDiv.innerHTML = 'Right click a node to activate a contextMenu.';
@@ -347,8 +403,6 @@ onMounted(() => {
     const height = container!.scrollHeight || 500;
 
     const contextMenu = new G6.Menu({
-
-
         getContent(evt) {
             let header;
             if (evt!.target && evt!.target.isCanvas && evt!.target.isCanvas()) {
@@ -357,29 +411,19 @@ onMounted(() => {
                 const itemType = evt!.item.getType();
                 header = `${itemType.toUpperCase()} ContextMenu`;
             }
-            return `
-
-    <ul>
+            return `<ul>
       <li>增加</li>
       <li>删除</li>
       <li>修改</li>
     </ul>`;
         },
-
-
-
-
-
-
         handleMenuClick: (target, item) => {
             console.log(target.nodeValue);
-
             console.log("target:" + target);
             console.log("item:" + item);
             console.log("target,item:" + target, item);
             console.log("ceshi" + item._cfg?.id);
             console.log("ceshi2" + target.innerHTML);
-
             interface nodeBase {
                 id: string
                 x: number
@@ -399,8 +443,6 @@ onMounted(() => {
 
                 g6_edit(Number.parseInt(item._cfg?.id || '0'))
             }
-
-
         },
         // offsetX and offsetY include the padding of the parent container
         // 需要加上父级容器的 padding-left 16 与自身偏移量 10
@@ -441,9 +483,23 @@ onMounted(() => {
             },
         },
         modes: {
-            default: ['drag-canvas', 'zoom-canvas', 'drag-node'], // 允许拖拽画布、放缩画布、拖拽节点
+            default: ['drag-canvas', 'zoom-canvas', 'drag-node',      {
+      	type: 'click-select',
+        multiple:false,
+      },], // 允许拖拽画布、放缩画布、拖拽节点、单选节点
         },
+
+        
     });
+    //监听状态的改变。用于给界面放东西
+    graph.on('afteritemstatechange', evt => {
+	const { item } = evt
+    if(item?._cfg?.states?.includes('selected')){
+        showInfo(item?._cfg?.id)
+    }
+    
+})
+
 
     // 读取数据
     graph.data(data);
@@ -455,53 +511,10 @@ onMounted(() => {
     //刚刚思考了下，不需要上下节点。因为必定添加在最后一位，原来的最后一位id==data.nodes.length
     //但是还是要判断从哪里开始进行修改label，从index开始，赋值给新的label，后面的就顺序下沿，如果index就是最后一位，其实
     const g6_add = (index: number, xTarget: number, yTarget: number) => {
-        let max = data.nodes.length
-        let modelNode = {
-            id: (max).toString(),
-            label: (max).toString(),
-            x: data.nodes[max - 1].x,
-            y: data.nodes[max - 1].y + 100,
-            type: 'rect',
-        }
-        let modelEdge = {
-            source: (max - 1).toString(),
-            target: (max).toString(),
-            label: ''
-        }
-        // 给g6的graph实例，添加node类型的新节点
-        graph.addItem('node', modelNode)
-        // 将节点对象，push到data对象中
-        data.nodes.push(modelNode)
-        // 给g6的graph实例，添加edge类型的边
-        graph.addItem('edge', modelEdge)
-        // 将边对象，push到data对象中
-        data.edges.push(modelEdge)
-        //data.nodes[index]时从0开始的
-        for (let i = data.nodes.length - 1; i > index; i--) {
-            console.log("i:" + i);
-            console.log("i-1.id:" + data.nodes[i - 1].id);
-            console.log("i-1.label:" + data.nodes[i - 1].label);
-            data.nodes[i].label = data.nodes[i - 1].label;
-            console.log("i.id" + data.nodes[i].id);
-            console.log("i.label" + data.nodes[i].label);
-            graph.updateItem((i).toString(), { label: data.nodes[i - 1].label })
-            console.log("i.label::after" + data.nodes[i].label);
-
-        }
-
-
         g6_id.value = index
+        g6_status.value=1
         //打开弹窗申请内容
         dialogVisible.value = true;
-
-        // let nodeLabel=index.toString()
-        //   let nodeLabel=''
-        //   data.nodes[index-1].label=nodeLabel
-        //   graph.updateItem((index).toString(),{label:data.nodes[index-1].label})
-
-
-        // graph.update('1',data.nodes[0])
-        // graph.update((index-1).toString(),data.nodes[index-1])
     }
 
 
@@ -509,74 +522,42 @@ onMounted(() => {
 
 
     const g6_edit = (index: number) => {
-        let max = data.nodes.length
-        let modelNode = {
-            id: (max).toString(),
-            label: (max).toString(),
-            x: data.nodes[max - 1].x,
-            y: data.nodes[max - 1].y + 100,
-            type: 'rect',
+            if (index == 0) {
+
+                ElMessage({
+                    showClose: true,
+                    type: 'warning',
+                    message: '开始不能被修改',
+                })
+                return
+            }
+
+            g6_id.value = index
+            g6_status.value = 2
+            form.value = tableData[index - 1]
+            //打开弹窗申请内容
+            dialogVisible.value = true;
         }
-        let modelEdge = {
-            source: (max - 1).toString(),
-            target: (max).toString(),
-            label: ''
-        }
-        // 给g6的graph实例，添加node类型的新节点
-        graph.addItem('node', modelNode)
-        // 将节点对象，push到data对象中
-        data.nodes.push(modelNode)
-        // 给g6的graph实例，添加edge类型的边
-        graph.addItem('edge', modelEdge)
-        // 将边对象，push到data对象中
-        data.edges.push(modelEdge)
-        //data.nodes[index]时从0开始的
-        for (let i = data.nodes.length - 1; i > index; i--) {
-            console.log("i:" + i);
-            console.log("i-1.id:" + data.nodes[i - 1].id);
-            console.log("i-1.label:" + data.nodes[i - 1].label);
-            data.nodes[i].label = data.nodes[i - 1].label;
-            console.log("i.id" + data.nodes[i].id);
-            console.log("i.label" + data.nodes[i].label);
-            graph.updateItem((i).toString(), { label: data.nodes[i - 1].label })
-            console.log("i.label::after" + data.nodes[i].label);
-
-        }
-
-
-        g6_id.value = index
-        //打开弹窗申请内容
-        dialogVisible.value = true;
-
-        // let nodeLabel=index.toString()
-        //   let nodeLabel=''
-        //   data.nodes[index-1].label=nodeLabel
-        //   graph.updateItem((index).toString(),{label:data.nodes[index-1].label})
-
-
-        // graph.update('1',data.nodes[0])
-        // graph.update((index-1).toString(),data.nodes[index-1])
-    }
 
 
     const g6_delete = (index: number) => {
         if (index == 0) {
-            console.log("删除开始");
+           
 
             ElMessage({
                 showClose: true,
                 type: 'warning',
                 message: '开始不能被删除',
             })
-            console.log("删除结束");
+    
 
             return
         }
         for (let i = index; i < data.nodes.length - 1; i++) {
             data.nodes[i].label = data.nodes[i + 1].label;
             graph.updateItem((i).toString(), { label: data.nodes[i].label })
-
         }
+        tableData.splice(index-1,1)
 
         graph.removeItem((data.nodes.length - 1).toString())
 
@@ -585,16 +566,16 @@ onMounted(() => {
         data.edges.splice(data.edges.length - 1, 1)
 
     }
-
-
-
-
-
-
-
-
 })
+const showInfo=(selectId:any)=>{
+    console.log("showinfo:"+selectId);
+    
+}
+//需要改变的id
 const g6_id = ref(0)
+//需要改变的状态-用于控制dialog是添加还是修改
+//添加的时候显示1，修改则表示为2
+const g6_status=ref(0)
 const data = {
     nodes: [
         {
@@ -643,7 +624,11 @@ dataload()
 }
 
 .g6Canvas {
+    margin-left: 10%;
     display: inline-block;
+    /* box-shadow:darkgrey 5px 5px 5px 5px; */
+    border: 1px 1px 1px 1px;
+    border-style:groove;
 }
 
 .routeTable {
