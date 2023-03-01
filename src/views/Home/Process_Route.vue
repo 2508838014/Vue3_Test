@@ -2,7 +2,7 @@
     <div style="height:100%;width: 100%;">
         <div>
             <el-dialog v-model="dialogVisible" @close="bgCancel()" title="Add Recipe" width="30%">
-                <el-form :model="form" label-width="140px">
+                <el-form ref="formRef" :model="form" label-width="140px">
                     <el-form-item label="Recipe name">
                         <el-input v-model="form.name" />
                     </el-form-item>
