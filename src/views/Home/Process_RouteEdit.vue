@@ -13,9 +13,48 @@
                     </el-form-item>
                     <el-form-item label="calagory">
                         <el-radio-group v-model="form.calagory">
-                            <el-radio label="1" >only storage</el-radio>
+                            <el-radio label="1">only storage</el-radio>
                             <el-radio label="check and storage" />
                         </el-radio-group>
+                    </el-form-item>
+                    <el-form-item label="storageChart">
+                        <el-table :data="form.storageChart">
+                            <el-table-column label="plcname" prop="plcName">
+                                <template #default="scope">
+                                <el-select v-model="form.storageChart[ scope.$index].plcName">
+                                    <el-option v-for="item in typeOptions" :key="item.types"
+                                        :value="item.types"></el-option>
+                                </el-select>
+                                
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="plcname" prop="min" >
+                            <template #default="scope">
+                                <el-input v-model="form.storageChart[ scope.$index].min"></el-input>
+                            </template>
+                            </el-table-column>
+                            <el-table-column label="plcname" prop="length" >
+                                <template #default="scope">
+                                <el-input v-model="form.storageChart[ scope.$index].length"></el-input>
+                            </template>
+                            </el-table-column>
+
+                            <el-table-column align="right" style="width: 280px;">
+                            <template #header>
+                                <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="Share">Add
+                                    item</el-button>
+                            </template>
+                            <template #default="scope">
+                                <el-button-group style="width:180px;">
+                                    <el-button type="primary" :icon="Share" @click="plcInfoAdd(scope.$index, scope.row)" />
+                                    <el-button type="danger" :icon="Delete" @click="plcInfoDelete(scope.$index, scope.row)" />
+                                </el-button-group>
+                            </template>
+                        </el-table-column>
+
+
+                        </el-table>
+                        <el-button>添加</el-button>
                     </el-form-item>
                 </el-form>
                 <template #footer>
@@ -61,6 +100,31 @@
                     <el-button type="primary" @click="routerSubmit()">submit</el-button>
                     <el-button type="primary" @click="routerCancel()">cancel</el-button>
                 </div>
+                <div class="infoDescription">
+                    <el-descriptions title="Produc Information" :column="1" border v-model="infoDes">
+                        <el-descriptions-item label="Process id" label-align="right" align="center"
+                            label-class-name="productLabel" class-name="my-content"
+                            width="150px">{{ infoDes.id }}</el-descriptions-item>
+                        <el-descriptions-item label="Product family" label-align="right"
+                            align="center">{{ infoDes.name }}</el-descriptions-item>
+                        <el-descriptions-item label="Product recipe" label-align="right"
+                            align="center">{{ infoDes.calagory }}</el-descriptions-item>
+                        <el-descriptions-item label="infos" label-align="right" align="center">
+                            <el-table :data="infoDes.storageChart">
+                                <el-table-column label="plcname" prop="plcName" />
+                                <el-table-column label="plcname" prop="min" />
+                                <el-table-column label="plcname" prop="length" />
+                            </el-table>
+                            <!-- <el-tag size="small">{{ infoDes.storageChart }}</el-tag> -->
+                        </el-descriptions-item>
+                        >
+                    </el-descriptions>
+
+                    <div>
+                        <el-button type="primary" :icon="Edit" @click="">More Logs</el-button>
+                        <el-button type="primary" :icon="Edit" @click="">Rework</el-button>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -76,13 +140,14 @@ import {
     Edit,
     Share,
 } from '@element-plus/icons-vue'
-import { type FormInstance,ElMessage, ElMessageBox } from 'element-plus'
+import { type FormInstance, ElMessage, ElMessageBox } from 'element-plus'
 import router from '@/router';
 import { useRoute } from 'vue-router';
 import request from '../../request/request'
 import { method } from 'lodash';
 import G6, { Graph } from '@antv/g6';
 import { onMounted } from 'vue';
+import { number2color } from '@antv/util';
 //<--------------获取id-------->
 var id = ref()
 const getId = () => {
@@ -110,6 +175,16 @@ const routerCancel = () => {
 
 
 //<-----------添加新的station------>
+const infoDes = ref({
+    id: '',
+    name: '',
+    calagory: 'only',
+    storageChart: [{
+        plcName: '',
+        min: 0,
+        length: 0
+    }]
+})
 // do not use same name with ref
 const form = ref({
     id: '',
@@ -152,6 +227,20 @@ let stationOptions = ref([{
     stations: 'station6',
 },
 ])
+let typeOptions = ref([{
+    types: 'int',
+}, {
+    types: 'float',
+}, {
+    types: 'byte',
+}, {
+    types: 'string',
+}, {
+    types: 'station5',
+}, {
+    types: 'station6',
+},
+])
 
 
 
@@ -176,6 +265,16 @@ const tabletest = (index: number, row: User) => {
             length: 3
         }]
     })
+}
+const plcInfoAdd = (index: number, row: User) => {
+    form.value.storageChart.splice(index + 1, 0, {
+            plcName: '',
+            min: 0,
+            length: 0
+        })
+}
+const plcInfoDelete = (index: number, row: User) => {
+    form.value.storageChart.splice(index, 1)
 }
 const tableDelete = (index: number, row: User) => {
     ElMessageBox.confirm(
@@ -209,20 +308,20 @@ const bgCancel = () => {
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(0px)'
     console.log("重置表单：bgCancel");
-    
+
     (<HTMLFormElement>document.getElementById('myform'))!.reset()
-    console.log("form:"+form.value.id);
-    
-    form.value={
-    id: '',
-    name: '',
-    calagory: '',
-    storageChart: [{
-        plcName: '',
-        min: 0,
-        length: 0
-    }]
-}
+    console.log("form:" + form.value.id);
+
+    form.value = {
+        id: '',
+        name: '',
+        calagory: '',
+        storageChart: [{
+            plcName: '',
+            min: 0,
+            length: 0
+        }]
+    }
 }
 
 
@@ -304,15 +403,14 @@ let tableData = reactive(
 const myformRef = ref<FormInstance>()
 
 const dialogConfirm = (form: any) => {
-    if(g6_status.value==1){
-        console.log("form confirm");
-    const station = {
-        id: form.id,
-        name: form.name,
-        calagory: form.calagory,
-        storageChart: form.storageChart,
-    }
-    let max = data.nodes.length
+    if (g6_status.value == 1) {
+        const station = {
+            id: form.id,
+            name: form.name,
+            calagory: form.calagory,
+            storageChart: form.storageChart,
+        }
+        let max = data.nodes.length
         let modelNode = {
             id: (max).toString(),
             label: (max).toString(),
@@ -335,38 +433,45 @@ const dialogConfirm = (form: any) => {
         data.edges.push(modelEdge)
         //data.nodes[index]时从0开始的
         for (let i = data.nodes.length - 1; i > g6_id.value; i--) {
-            console.log("i:" + i);
-            console.log("i-1.id:" + data.nodes[i - 1].id);
-            console.log("i-1.label:" + data.nodes[i - 1].label);
             data.nodes[i].label = data.nodes[i - 1].label;
-            console.log("i.id" + data.nodes[i].id);
-            console.log("i.label" + data.nodes[i].label);
             graph.updateItem((i).toString(), { label: data.nodes[i - 1].label })
-            console.log("i.label::after" + data.nodes[i].label);
         }
-    tableData.splice(g6_id.value - 1, 0, station)
-    graph.update((g6_id.value).toString(), { label: form.id })
-    data.nodes[g6_id.value].label = form.id
-    g6_id.value=-1
-    g6_status.value=0
-
-myformRef.value?.resetFields()
-    }
-    else if(g6_status.value==2){
+        tableData.splice(g6_id.value - 1, 0, station)
         graph.update((g6_id.value).toString(), { label: form.id })
-        form.value={
-    id: '',
-    name: '',
-    calagory: '',
-    storageChart: [{
-        plcName: '',
-        min: 0,
-        length: 0
-    }]
-}
+        data.nodes[g6_id.value].label = form.id
+            //解决add情况下不selected改变不能刷新详细信息的问题
+
+        selectChange(g6_id.value)
+        infoDes.value=tableData[g6_id.value-1]
+
     }
-    g6_id.value=-1
-    g6_status.value=0
+    else if (g6_status.value == 2) {
+        graph.update((g6_id.value).toString(), { label: form.id })
+        form.value = {
+            id: '',
+            name: '',
+            calagory: '',
+            storageChart: [{
+                plcName: '',
+                min: 0,
+                length: 0
+            }]
+        }
+    }
+
+    g6_id.value = -1
+    g6_status.value = 0
+}
+const selectChange=(id:any)=>{
+    console.log("selectChange:"+id);
+    console.log("g6_select_id:"+g6_select_id.value);
+    
+    if(g6_select_id.value!=-1){
+        graph.findById(g6_select_id.value.toString()).clearStates()
+    }    
+    graph.findById(id).setState('selected',true)
+    g6_select_id.value=id
+
 }
 
 //<--------------g6 canvas--------->
@@ -418,12 +523,12 @@ onMounted(() => {
     </ul>`;
         },
         handleMenuClick: (target, item) => {
-            console.log(target.nodeValue);
-            console.log("target:" + target);
-            console.log("item:" + item);
-            console.log("target,item:" + target, item);
-            console.log("ceshi" + item._cfg?.id);
-            console.log("ceshi2" + target.innerHTML);
+            // console.log(target.nodeValue);
+            // console.log("target:" + target);
+            // console.log("item:" + item);
+            // console.log("target,item:" + target, item);
+            // console.log("ceshi" + item._cfg?.id);
+            // console.log("ceshi2" + target.innerHTML);
             interface nodeBase {
                 id: string
                 x: number
@@ -483,36 +588,35 @@ onMounted(() => {
             },
         },
         modes: {
-            default: ['drag-canvas', 'zoom-canvas', 'drag-node',      {
-      	type: 'click-select',
-        multiple:false,
-      },], // 允许拖拽画布、放缩画布、拖拽节点、单选节点
+            default: ['drag-canvas', 'zoom-canvas', 'drag-node', {
+                type: 'click-select',
+                multiple: false,
+            },], // 允许拖拽画布、放缩画布、拖拽节点、单选节点
         },
 
-        
+
     });
-    //监听状态的改变。用于给界面放东西
+    //监听状态的改变。用于给显示详细信息
     graph.on('afteritemstatechange', evt => {
-	const { item } = evt
-    if(item?._cfg?.states?.includes('selected')){
-        showInfo(item?._cfg?.id)
-    }
-    
-})
-
-
+        const { item } = evt
+        if (item?._cfg?.states?.includes('selected')) {
+            showInfo(item?._cfg?.id)
+            g6_select_id.value=Number.parseInt(item?._cfg?.id||'-1')
+        }
+        else{
+            g6_select_id.value=-1
+        }
+    })
     // 读取数据
     graph.data(data);
     graph.render()
-
-
     //index,xTarget,yTarget:想要生成的id，x,y（tips:index从1开始）//id的作用在于修改
     //nextNode,sourceNode:想要生成的node的上下节点，用于连线。没有下节点则表示为自己。
     //刚刚思考了下，不需要上下节点。因为必定添加在最后一位，原来的最后一位id==data.nodes.length
     //但是还是要判断从哪里开始进行修改label，从index开始，赋值给新的label，后面的就顺序下沿，如果index就是最后一位，其实
     const g6_add = (index: number, xTarget: number, yTarget: number) => {
         g6_id.value = index
-        g6_status.value=1
+        g6_status.value = 1
         //打开弹窗申请内容
         dialogVisible.value = true;
     }
@@ -522,60 +626,86 @@ onMounted(() => {
 
 
     const g6_edit = (index: number) => {
-            if (index == 0) {
+        if (index == 0) {
 
-                ElMessage({
-                    showClose: true,
-                    type: 'warning',
-                    message: '开始不能被修改',
-                })
-                return
-            }
-
-            g6_id.value = index
-            g6_status.value = 2
-            form.value = tableData[index - 1]
-            //打开弹窗申请内容
-            dialogVisible.value = true;
+            ElMessage({
+                showClose: true,
+                type: 'warning',
+                message: '开始不能被修改',
+            })
+            return
         }
+
+        g6_id.value = index
+        g6_status.value = 2
+        form.value = tableData[index - 1]
+        //打开弹窗申请内容
+        dialogVisible.value = true;
+    }
 
 
     const g6_delete = (index: number) => {
         if (index == 0) {
-           
-
             ElMessage({
                 showClose: true,
                 type: 'warning',
                 message: '开始不能被删除',
             })
-    
-
             return
         }
         for (let i = index; i < data.nodes.length - 1; i++) {
             data.nodes[i].label = data.nodes[i + 1].label;
             graph.updateItem((i).toString(), { label: data.nodes[i].label })
         }
-        tableData.splice(index-1,1)
-
+        tableData.splice(index - 1, 1)
+        if (g6_select_id.value >= index) {
+            selectChange(g6_select_id.value - 1)
+            if (g6_select_id.value == 0) {
+                infoDes.value = {
+                    id: '',
+                    name: '',
+                    calagory: '',
+                    storageChart: [{
+                        plcName: '',
+                        min: 0,
+                        length: 0
+                    }]
+                }
+            } else {
+                infoDes.value = tableData[g6_select_id.value-1]
+            }
+        }
         graph.removeItem((data.nodes.length - 1).toString())
-
         data.nodes.splice(data.nodes.length - 1, 1)
-
         data.edges.splice(data.edges.length - 1, 1)
-
     }
 })
-const showInfo=(selectId:any)=>{
-    console.log("showinfo:"+selectId);
-    
+const showInfo = (selectId: any) => {
+    console.log("showinfo:" + selectId);
+    if (selectId == 0) {
+        infoDes.value = {
+            id: '',
+            name: '',
+            calagory: '',
+            storageChart: [{
+                plcName: '',
+                min: 0,
+                length: 0
+            }]
+        }
+    } else {
+        infoDes.value = tableData[selectId - 1]
+    }
+
+
 }
+//select_id,用于应对add与delect selected上方，但是select信息不改变的情况
+const g6_select_id=ref(0)
 //需要改变的id
 const g6_id = ref(0)
 //需要改变的状态-用于控制dialog是添加还是修改
 //添加的时候显示1，修改则表示为2
-const g6_status=ref(0)
+const g6_status = ref(0)
 const data = {
     nodes: [
         {
@@ -623,12 +753,17 @@ dataload()
     border-radius: 20px;
 }
 
+.infoDescription {
+    position: static;
+    width: 80%;
+}
+
 .g6Canvas {
     margin-left: 10%;
     display: inline-block;
     /* box-shadow:darkgrey 5px 5px 5px 5px; */
     border: 1px 1px 1px 1px;
-    border-style:groove;
+    border-style: groove;
 }
 
 .routeTable {
