@@ -11,19 +11,16 @@
             </el-dialog>
         </div>
         <div id='routeContioner'>
-            <div class="scanDiv">
-
+            <div style="padding:20px 30px 10px 30px">
+                <h3 >Product Info</h3>
+            </div>
+            <div class="scanDiv" align="center">
                     <div style="display:inline-block;left:0;width: 100px;height: 100%;"><span>产品编码:</span>
-                    <!-- <div class="ml-3 w-35 text-gray-600 inline-flex items-center"><span>产品编码</span> -->
                 </div>
-                <!-- <el-input v-model="scanInput" :autofocus="true" @keyup.enter.native="scanSubmit()" style="display:inline;" -->
                 <el-input v-model="scanInput" v-focus @keyup.enter.native="scanSubmit()" style="display:inline;"
                     size="large"></el-input>
                 <div style="display:inline-block;right: 0;width: 200px;height: 100%;">
                     <el-button size="large" style="margin-left: 30px;">确认</el-button></div>
-                    
-
-
             </div>
             <div class="infoDescription">
                 <el-descriptions title="Produc Information" :column="1" border v-model="infosDes">
@@ -227,15 +224,10 @@ let infosDes = ref({
 }
 
 .scanDiv {
-    height: 50px;
     margin: auto;
-    padding-top: 40px;
-    left: 0px;
-    right: 0px;
-    /* width: 800px; */
+    padding-top: 0px;
     align-items: center;
-    /* background-color: blueviolet; */
-    /* display: inline; */
+
 }
 
 .statusTable {

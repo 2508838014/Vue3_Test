@@ -51,8 +51,6 @@
                                 </el-button-group>
                             </template>
                         </el-table-column>
-
-
                         </el-table>
                         <el-button>添加</el-button>
                     </el-form-item>
@@ -562,7 +560,7 @@ onMounted(() => {
         // 使用 contextMenu plugins 时，需要将 container 设置为 position: relative;
         container: 'mountNode',
         width: 400,
-        height: 800,
+        height: 600,
         linkCenter: true,
         plugins: [contextMenu],
         defaultNode: {

@@ -5,6 +5,7 @@ import Sidebar from '../views/Sidebar.vue'
 import Process_Route from '../views/Home/Process_Route.vue'
 import Process_RouteEdit from '../views/Home/Process_RouteEdit.vue'
 import Product_Query from '../views/Home/Product_Query.vue'
+import Product_Logs from '../views/Home/Product_Logs.vue'
 import UserInfo from '../views/Home/UserInfo.vue'
 import Analysize from '../views/Home/Analysize.vue'
 import PlcInfo from '../views/Home/PlcInfo.vue'
@@ -28,6 +29,11 @@ const router = createRouter({
           path: "/Home/Product_Query",
           name: "Product_Query",
           component: Product_Query,
+        },
+        {
+          path: "/Home/Product_Logs",
+          name: "Product_Logs",
+          component: Product_Logs,
         },
         {
           path: "/Home/Process_RouteEdit",

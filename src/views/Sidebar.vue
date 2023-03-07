@@ -35,6 +35,9 @@
             <router-link  :to="{name: 'Product_Query'}">
               <el-menu-item index="2-1">产品信息</el-menu-item> 
             </router-link>
+            <router-link  :to="{name: 'Product_Logs'}">
+              <el-menu-item index="2-2">产品日志</el-menu-item> 
+            </router-link>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>
