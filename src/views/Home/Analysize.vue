@@ -1,188 +1,181 @@
 <template>
     <div style="height:100%;width: 100%;">
-        <div>
-            <el-dialog v-model="dialogVisible" @close="bgCancel()" title="Add Process Route" width="30%">
-                <el-form :model="form" label-width="120px">
-                    <el-form-item label="Activity name">
-                        <el-input v-model="form.name" />
-                    </el-form-item>
-                    <el-form-item label="Activity name">
-                        <el-input v-model="form.date" />
-                    </el-form-item>
-                </el-form>
-                <template #footer>
-                    <span class="dialog-footer">
-                        <el-button @click="dialogVisible = false; dialogCancel()">Cancel</el-button>
-                        <el-button type="primary" @click="dialogVisible = false; dialogConfirm(form)">
-                            Confirm
-                        </el-button>
-                    </span>
-                </template>
-            </el-dialog>
-        </div>
+
         <div id='routeContioner'>
-            <div class="routeTable">
-                <el-table :data="filterTableData" style="width: 100%">
-                    <el-table-column label="Date" prop="date" />
-                    <el-table-column label="Name" prop="name" />
-                    <el-table-column align="right">
-                        <template #header>
-                            <el-input v-model="search" size="small" placeholder="Type to search" />
-                            <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="Share">Add
-                                item</el-button>
-                        </template>
-                        <template #default="scope">
-                            <el-button-group style="width:180px;">
-                                <el-button type="primary" :icon="Edit" @click="tableEdit(scope.$index, scope.row)" />
-                                <el-button type="primary" :icon="Share" />
-                                <el-button type="danger" :icon="Delete" @click="tableDelete(scope.$index, scope.row)" />
-                            </el-button-group>
-                        </template>
-                    </el-table-column>
-                </el-table>
+            <div style="padding:20px 30px 10px 30px">
+                <h3 >Recipes</h3>
             </div>
+            <div id="line" class="formCard"></div>
+            <div id="bar" class="formCard"></div>
+            <div id="pie" class="formCard"></div>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, reactive } from 'vue'
-import {
-    ArrowLeft,
-    ArrowRight,
-    Delete,
-    Edit,
-    Share,
-} from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { dateEquals, datePickTypes, ElMessage, ElMessageBox } from 'element-plus'
 import request from '../../request/request'
 import router from '@/router';
+import {onMounted} from 'vue';
+// Echarts 为init（dom元素后的类型）
+// EChartsOption 为 option 的类型
+import { init} from 'echarts';
+import type { ECharts, EChartsOption,} from 'echarts';
+import { forEach } from 'lodash';
 
-// do not use same name with ref
-const form = reactive({
-    name: '',
-    date: '',
-    date1: '',
-    date2: '',
-    delivery: false,
-    type: [],
-    resource: '',
-    desc: '',
-})
 
-const dialogConfirm = (form: any) => {
-    console.log("form confirm");
-    const user = {
-        name: form.name,
-        date: form.date,
-        address: ''
+
+      // const { account, password }
+      //   = ruleForm.value
+      // request.post("/login", { account, password }).then(res => {
+      //   if (res.status == 200) {
+          // ElMessage({
+          //   message: 'Login succeeded.',
+          //   type: 'success',
+          // })
+      //     router.push('/')
+      //     resForm=res.data
+      //     localStorage.setItem("level",resForm.value.level)
+      //     localStorage.setItem("name",resForm.value.name)
+      //   }
+      // }, (error) => {
+      //   console.log("fail submit");
+      //   ElMessage.error('Login failed, please check the network, etc.')
+      // })
+
+const res=[{date:"2011-1-1",value:"11"},
+{date:"2011-1-2",value:"11"},
+{date:"2011-1-3",value:"11"},
+{date:"2011-1-4",value:"11"},
+{date:"2011-1-5",value:"11"},
+{date:"2011-1-6",value:"11"},
+{date:"2011-1-7",value:"11"},
+]
+let sumData=ref(res)
+let xSumData:Array<string>=[]
+let ySumData:Array<string>=[]
+let  computeSumData=()=>{
+    for(let i=0;i<sumData.value.length;i++){
+        xSumData.push(sumData.value[i].date)
+        ySumData.push(sumData.value[i].value)
     }
-    tableData.push(user)
-}
-const dialogCancel = () => {
-    console.log("two methods is ok");
+    
 }
 
-
-
-let dialogVisible = ref(false)
-interface User {
-    date: string
-    name: string
-    address: string
-}
-const tableDelete = (index: number, row: User) => {
-    ElMessageBox.confirm(
-        'This routing will be deleted',
-        'Warning',
-        {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
-            type: 'warning',
-        }
-    )
-        .then(() => {
-            ElMessage({
-                type: 'success',
-                message: 'Delete completed',
-            })
-            tableData.splice(index,1)
-            console.log("sccess delete" + row);
-        })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: 'Delete canceled',
-            })
-        })
-}
-const tableAdd = () => {
-    console.log("two methods is ok");
-    var popupbg = document.getElementById('routeContioner')
-    popupbg!.style.filter = 'blur(10px)'
-}
-const tableEdit = (index: number, row: User) => {
-    console.log("edit");
-    router.push({
-        path: 'Process_RouteEdit',
-        query: { name1: row.name }
-
-    })
-}
-const bgCancel = () => {
-    var popupbg = document.getElementById('routeContioner')
-    popupbg!.style.filter = 'blur(0px)'
-}
-
-
-
-const search = ref('')
-const filterTableData = computed(() =>
-    tableData.filter(
-        (data) =>
-            !search.value ||
-            data.name.toLowerCase().includes(search.value.toLowerCase())
-    )
-)
-const handleEdit = (index: number, row: User) => {
-    console.log(index, row)
-}
-const handleDelete = (index: number, row: User) => {
-    console.log(index, row)
-}
-
-let tableData = reactive(
-    [
-        {
-            date: '2016-05-03',
-            name: 'Tom',
-            address: 'No. 189, Grove St, Los Angeles',
-        },
-        {
-            date: '2016-05-02',
-            name: 'John',
-            address: 'No. 189, Grove St, Los Angeles',
-        },
-        {
-            date: '2016-05-04',
-            name: 'Morgan',
-            address: 'No. 189, Grove St, Los Angeles',
-        },
-        {
-            date: '2016-05-01',
-            name: 'Jessy',
-            address: 'No. 189, Grove St, Los Angeles',
-        },
+computeSumData()
+const Draw_line=()=>{
+    const charEle = document.getElementById("line") as HTMLElement;
+  const charEch: ECharts = init(charEle);
+  const option: EChartsOption = {
+    title:{
+        text:'产量变化'
+    },
+    tooltip:{},
+    xAxis: {
+      type: 'category',
+      data:xSumData
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name:'base info',
+        data: [150, 230, 224, 218, 135, 147, 260],
+        type: 'line'
+      }
     ]
-)
+  };
+  charEch.setOption(option);
+}
+const Draw_bar=()=>{
+    const charEle = document.getElementById("bar") as HTMLElement;
+  const charEch: ECharts = init(charEle);
+  const option: EChartsOption = {
+    title:{
+        text:'测试内容'
+
+    },
+    tooltip:{},
+    xAxis: {
+      type: 'category',
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name:'base info',
+        data: [150, 230, 224, 218, 135, 147, 260],
+        type: 'bar'
+      }
+    ]
+  };
+  charEch.setOption(option);
+}
+const Draw_pie=()=>{
+    const charEle = document.getElementById("pie") as HTMLElement;
+  const charEch: ECharts = init(charEle);
+  const option: EChartsOption ={
+  title: {
+    text: 'Referer of a Website',
+    subtext: 'Fake Data',
+    left: 'center'
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    orient: 'vertical',
+    left: 'left'
+  },
+  series: [
+    {
+      name: 'Access From',
+      type: 'pie',
+      radius: '50%',
+      data: [
+        { value: 1048, name: 'Search Engine' },
+        { value: 735, name: 'Direct' },
+        { value: 580, name: 'Email' },
+        { value: 484, name: 'Union Ads' },
+        { value: 300, name: 'Video Ads' }
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  ]
+};
+  charEch.setOption(option);
+}
+onMounted(() => {
+ Draw_line()
+ Draw_bar()
+ Draw_pie()
+});
 </script>
 
 <style scoped>
+.formCard{
+    width: 400px;
+    height: 400px;
+    margin: 80px;
+    border: 1px;
+    display: inline-block;
+}
 #routeContioner {
     margin: 20px;
     height: calc(100% - 40px);
     width: calc(100% - 40px);
     background-color: aliceblue;
     border-radius: 20px;
+    overflow:auto;
 }
 </style>

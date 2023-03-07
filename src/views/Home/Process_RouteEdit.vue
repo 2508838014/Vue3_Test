@@ -39,11 +39,7 @@
                             </template>
                             </el-table-column>
 
-                            <el-table-column align="right" style="width: 280px;">
-                            <template #header>
-                                <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="Share">Add
-                                    item</el-button>
-                            </template>
+                            <el-table-column label="Action" align="right" style="width: 280px;">
                             <template #default="scope">
                                 <el-button-group style="width:180px;">
                                     <el-button type="primary" :icon="Share" @click="plcInfoAdd(scope.$index, scope.row)" />
@@ -52,7 +48,20 @@
                             </template>
                         </el-table-column>
                         </el-table>
-                        <el-button>添加</el-button>
+                        <input id="plcInfoImportBtn" type="file" @click="plcInfoImport()" accept="text/csv" />
+                        <el-upload
+    ref="upload"
+    class="upload-demo"
+    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+    accept="text/csv"
+    :limit="1"
+    :on-exceed="handleExceed"
+    :auto-upload="false"
+  >
+    <template #trigger>
+      <el-button type="primary" @click="plcInfoImport()">select file</el-button>
+    </template>
+</el-upload>
                     </el-form-item>
                 </el-form>
                 <template #footer>
@@ -138,7 +147,8 @@ import {
     Edit,
     Share,
 } from '@element-plus/icons-vue'
-import { type FormInstance, ElMessage, ElMessageBox } from 'element-plus'
+import { type FormInstance, ElMessage, ElMessageBox,genFileId } from 'element-plus'
+import type { UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
 import router from '@/router';
 import { useRoute } from 'vue-router';
 import request from '../../request/request'
@@ -273,6 +283,56 @@ const plcInfoAdd = (index: number, row: User) => {
 }
 const plcInfoDelete = (index: number, row: User) => {
     form.value.storageChart.splice(index, 1)
+}
+const upload = ref<UploadInstance>()
+
+const handleExceed: UploadProps['onExceed'] = (files) => {
+  upload.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  upload.value!.handleStart(file)
+}
+
+const submitUpload = () => {
+  upload.value!.submit()
+}
+const plcInfoImport=()=>{
+    
+    var file1 = document.getElementById('plcInfoImportBtn');
+	file1!.onchange = function () {
+		var file = (<HTMLInputElement>file1).files![0];
+		//读取为二进制
+    var reader = new FileReader();
+		reader.readAsText(file,'utf-8');
+		reader.onload = function () {
+			var str = reader.result;
+            if(str==null){
+                console.log("读取未空");
+                
+                return
+            }
+            
+			var rows = (<string>str)!.split('\n'); 
+			var clients = [];
+			for(var i =1; i<rows.length-1; i++){
+                
+				var row =rows[i].split(',') ;
+				var client = {
+					plcName:row[0],
+					min:Number.parseInt( row[1]),
+					length:Number.parseInt(row[2]),
+				};
+                form.value.storageChart.push(client)
+				clients.push(client);
+			}
+			//由对象转为JSON字符串
+			console.log(JSON.stringify(clients));
+			
+			console.log(rows);
+            
+        }
+		}
+
 }
 const tableDelete = (index: number, row: User) => {
     ElMessageBox.confirm(
