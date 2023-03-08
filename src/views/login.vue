@@ -18,14 +18,12 @@
     </div>
   </div>
 </template>
-  
+
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
-import { defineComponent, getCurrentInstance } from 'vue'
 import { type FormInstance, ElMessage } from 'element-plus'
 import request from '../request/request'
 import router from '@/router';
-import { method } from 'lodash';
 let ruleForm = ref({
   account: '',
   pass: '',
@@ -93,44 +91,100 @@ const Getinfo = (ruleForm: any) => {
     }
   )
 }
-let resForm=ref({
-  name:'',
-  level:''
-})
+// let resForm=ref({
+//   name:'',
+//   level:''
+// })
+// let resForm=ref({
+//   message: "",
+//   success: false,
+//   content: any='',
+//   errorCode: 0
+// })
+interface resData{
+  message: string,
+  success: Boolean,
+  content: any,
+  errorCode: number
+}
+let resForm:resData
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate((valid) => {
     if (valid) {
 
-      localStorage.setItem("level",'2')
-      localStorage.setItem("name",'张三')
+      // localStorage.setItem("level",'2')
+      // localStorage.setItem("name",'张三')
       ElMessage({
             message: 'Login succeeded.',
             type: 'success',
           })
-      router.push('/')
+      // router.push('/')
 
 
 
 
 
-      // const { account, password }
-      //   = ruleForm.value
-      // request.post("/login", { account, password }).then(res => {
+      const { account, pass }
+        = ruleForm.value
+  //     const test1={
+  //       "nameUser": ruleForm.value.account,
+  // "password": ruleForm.value.pass,
+  // "privilegeLevel": 0
+  //     }
+  const test1={
+        userName: ruleForm.value.account,
+  password: ruleForm.value.pass,
+  privilegeLevel: 0
+      }
+      // request.post("/Login/CheckLoginUsers", test1).then(res => {
+      //   console.log(JSON.stringify(test1));
+        
       //   if (res.status == 200) {
-          // ElMessage({
-          //   message: 'Login succeeded.',
-          //   type: 'success',
-          // })
-      //     router.push('/')
+      //     ElMessage({
+      //       message: 'Login succeeded.',
+      //       type: 'success',
+      //     })
+      //     // router.push('/')
       //     resForm=res.data
-      //     localStorage.setItem("level",resForm.value.level)
-      //     localStorage.setItem("name",resForm.value.name)
+      //     if(resForm.success){
+
+      //       localStorage.setItem("level",resForm.content.toString())
+      //       localStorage.setItem("account",resForm.account.toString())
+      //     }else{
+      //       ElMessage.error('Login failed, please check the network, etc.')
+      //     }
       //   }
       // }, (error) => {
+      //   console.log(JSON.stringify(test1));
       //   console.log("fail submit");
       //   ElMessage.error('Login failed, please check the network, etc.')
       // })
+
+
+
+
+
+
+
+
+      request.get("/GetPlcInfos").then(res => {
+        console.log(JSON.stringify(test1));
+        
+        if (res.status == 200) {
+          
+        }
+      }, (error) => {
+        console.log(JSON.stringify(test1));
+        console.log("fail submit");
+        ElMessage.error('Login failed, please check the network, etc.')
+      })
+
+
+
+
+
+
 
 
     }

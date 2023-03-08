@@ -3,7 +3,9 @@ import router from "../router";
 import { getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
 const request = axios.create({
-  baseURL: `http://localhost:3003`,
+
+  baseURL: `https://192.168.4.66:7190`,
+    // baseURL: `http://localhost:3003`,
   timeout: 30000,
 });
 

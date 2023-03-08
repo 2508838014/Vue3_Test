@@ -35,7 +35,7 @@
             </div>
             <div class="routeTable">
                 <span style="padding-left: 40px;"></span>
-                <el-table :data="filterTableData" max-height="600px" style="width: 80%;margin-left: 10%;">
+                <el-table :data="tableShowData" max-height="600px" style="width: 80%;margin-left: 10%;">
                     <el-table-column label="id" prop="id" />
                     <el-table-column label="password" prop="password" />
                     <el-table-column label="name" prop="name" />
@@ -83,16 +83,17 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '../../request/request'
 import router from '@/router';
 
-const currentPage = ref(4)
-let totalNum=ref(400)
+const currentPage = ref(1)
+let totalNum=ref(0)
+const pageSize=10
 const small = ref(false)
 const background = ref(false)
+let tableShowData=ref()
 const handleCurrentChange = (val: number) => {
+    // tableShowData.value=tableData.slice(Math.max((val-1)*pageSize-1,0),pageSize)
+    tableShowData.value=tableData.slice(Math.max((val-1)*pageSize,0),Math.min(val*pageSize,tableData.length))
   console.log(`current page: ${val}`)
 }
-
-
-
 // do not use same name with ref
 let form = reactive({
     id:'',
@@ -101,9 +102,123 @@ let form = reactive({
     phoneNo:'',
     name: '',
 })
+let tableData=reactive([{
+    id:'',
+    password:'',
+    level:'',
+    phoneNo:'',
+    name: '',
+}])
 
+const pageLoad=()=>{
+    //赋值给tableData
+    tableData=    [
+        {
+            id:'n00001',
+            name:'zhangsan',
+            password:'00001',
 
+            level:'1',
+            phoneNo: '12345123451',
 
+        },
+        {
+            id:'n00002',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00003',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00004',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00005',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00006',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00007',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00008',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n00009',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n000010',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n000011',
+            password:'00001',
+            name:'zhangsan',
+
+            level:'1',
+            phoneNo: '12345123451',
+        },
+        {
+            id:'n000012',
+            password:'00001',
+            name:'zhangsan',
+            level:'1',
+            phoneNo: '12345123451',
+        },
+
+    ]
+    totalNum.value=tableData.length
+    console.log("totalNum:"+totalNum.value);
+    console.log("tableData.values.length:"+tableData.values.length);
+    console.log("tableData.values.length:"+tableData.length);
+    
+    tableShowData.value=tableData.slice(0,Math.min(1*pageSize,tableData.length))
+}
+pageLoad()
 const dialogConfirm = (form: any) => {
     console.log("form confirm");
     const user = {
@@ -171,121 +286,10 @@ const bgCancel = () => {
 }
 
 
-
-const search = ref('')
-const filterTableData = computed(() =>
-    tableData.filter(
-        (data) =>
-            !search.value ||
-            data.id.toLowerCase().includes(search.value.toLowerCase())
-    )
-)
 const handleDelete = (index: number, row: User) => {
     console.log(index, row)
 }
 
-let tableData = reactive(
-    [
-        {
-            id:'n00001',
-            name:'zhangsan',
-            password:'00001',
-
-            level:'1',
-            phoneNo: '12345123451',
-
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-        {
-            id:'n00001',
-            password:'00001',
-            name:'zhangsan',
-
-            level:'1',
-            phoneNo: '12345123451',
-        },
-
-    ]
-)
 </script>
 
 <style scoped>
