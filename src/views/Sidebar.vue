@@ -23,7 +23,7 @@
             <router-link :to="{name: 'PlcInfo'}">
               <el-menu-item index="1-2">工艺流程编辑</el-menu-item> 
             </router-link>
-            <router-link :to="{name: 'contioner'}">
+            <router-link :to="{name: 'PlcInfo'}">
               <el-menu-item index="1-3">plc信息登记</el-menu-item> 
             </router-link>
         </el-sub-menu>

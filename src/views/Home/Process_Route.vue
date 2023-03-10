@@ -26,6 +26,7 @@
             </div>
             <div class="routeTable">
                 <el-table :data="filterTableData" style="width: 80%;margin-left: 10%;">
+
                     <el-table-column label="Name" prop="name" />
                     <el-table-column label="Last motified date" prop="date" />
                     <el-table-column label="Description" prop="remark" />
@@ -201,7 +202,7 @@ let tableData = reactive(
     background-color: aliceblue;
     border-radius: 20px;
 }
-.routeTable{
+/* .routeTable{
 
-}
+} */
 </style>

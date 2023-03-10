@@ -1,8 +1,8 @@
 <template>
     <div style="height:100%;width: 100%;">
         <div>
-            <el-dialog v-model="dialogVisible" @open="bgOpen()" @close="bgCancel()" title="Add User" width="30%">
-                <el-form :model="form" label-width="120px">
+            <el-dialog v-model="dialogVisible" @open="bgOpen()" @close="bgCancel(formRef)" title="Add User" width="30%">
+                <el-form :ref="formRef" :model="form" label-width="120px">
                     <el-form-item label="name">
                         <el-input v-model="form.name" />
                     </el-form-item>
@@ -26,12 +26,9 @@
                 </template>
             </el-dialog>
         </div>
-
-
-
         <div id='routeContioner'>
             <div style="padding:20px 30px 10px 30px">
-                <h3 >用户信息</h3>
+                <h3>用户信息</h3>
             </div>
             <div class="routeTable">
                 <span style="padding-left: 40px;"></span>
@@ -41,29 +38,24 @@
                     <el-table-column label="name" prop="name" />
                     <el-table-column label="level" prop="level" />
                     <el-table-column label="phoneNo" prop="phoneNo" />
-                    <el-table-column >
+                    <el-table-column>
                         <template #header>
-                            
+
                             <el-button type="primary" @click="dialogVisible = true; tableAdd()" :icon="Share">Add
                                 item</el-button>
                         </template>
                         <template #default="scope">
                             <el-button-group style="width:180px;">
-                                <el-button type="primary" :icon="Edit" @click="dialogVisible = true;tableEdit(scope.$index, scope.row)" />
+                                <el-button type="primary" :icon="Edit"
+                                    @click="dialogVisible = true; tableEdit(scope.$index, scope.row)" />
                                 <el-button type="danger" :icon="Delete" @click="tableDelete(scope.$index, scope.row)" />
                             </el-button-group>
                         </template>
                     </el-table-column>
                 </el-table>
                 <div style="width: 80%;margin-left: 10%;">
-                    <el-pagination
-      v-model:current-page="currentPage"
-      :small="small"
-      :background="background"
-      layout="total, prev, pager, next, jumper"
-      :total="totalNum"
-      @current-change="handleCurrentChange"
-    />
+                    <el-pagination v-model:current-page="currentPage" :small="small" :background="background"
+                        layout="total, prev, pager, next, jumper" :total="totalNum" @current-change="handleCurrentChange" />
                 </div>
             </div>
         </div>
@@ -79,156 +71,145 @@ import {
     Edit,
     Share,
 } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, type FormInstance } from 'element-plus'
 import request from '../../request/request'
 import router from '@/router';
 
 const currentPage = ref(1)
-let totalNum=ref(0)
-const pageSize=10
+let totalNum = ref(0)
+const pageSize = 10
 const small = ref(false)
 const background = ref(false)
-let tableShowData=ref()
+let tableShowData = ref()
 const handleCurrentChange = (val: number) => {
-    // tableShowData.value=tableData.slice(Math.max((val-1)*pageSize-1,0),pageSize)
-    tableShowData.value=tableData.slice(Math.max((val-1)*pageSize,0),Math.min(val*pageSize,tableData.length))
-  console.log(`current page: ${val}`)
+    tableShowData.value = tableData.slice(Math.max((val - 1) * pageSize, 0), Math.min(val * pageSize, tableData.length))
+    console.log(`current page: ${val}`)
 }
 // do not use same name with ref
-let form = reactive({
-    id:'',
-    password:'',
-    level:'',
-    phoneNo:'',
+let form = ref({
+    id: '',
+    password: '',
+    level: '',
+    phoneNo: '',
     name: '',
 })
-let tableData=reactive([{
-    id:'',
-    password:'',
-    level:'',
-    phoneNo:'',
-    name: '',
-}])
+let tableData:User[] = reactive([])
 
-const pageLoad=()=>{
+const pageLoad = () => {
     //赋值给tableData
-    tableData=    [
+    tableData = [
         {
-            id:'n00001',
-            name:'zhangsan',
-            password:'00001',
+            id: 'n00001',
+            name: 'zhangsan',
+            password: '00001',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
 
         },
         {
-            id:'n00002',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00002',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00003',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00003',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00004',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00004',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00005',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00005',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00006',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00006',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00007',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00007',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00008',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00008',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n00009',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n00009',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n000010',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n000010',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n000011',
-            password:'00001',
-            name:'zhangsan',
+            id: 'n000011',
+            password: '00001',
+            name: 'zhangsan',
 
-            level:'1',
+            level: '1',
             phoneNo: '12345123451',
         },
         {
-            id:'n000012',
-            password:'00001',
-            name:'zhangsan',
-            level:'1',
+            id: 'n000012',
+            password: '00001',
+            name: 'zhangsan',
+            level: '1',
             phoneNo: '12345123451',
         },
 
     ]
-    totalNum.value=tableData.length
-    console.log("totalNum:"+totalNum.value);
-    console.log("tableData.values.length:"+tableData.values.length);
-    console.log("tableData.values.length:"+tableData.length);
-    
-    tableShowData.value=tableData.slice(0,Math.min(1*pageSize,tableData.length))
+    totalNum.value = tableData.length
+    tableShowData.value = tableData.slice(0, Math.min(1 * pageSize, tableData.length))
 }
 pageLoad()
 const dialogConfirm = (form: any) => {
     console.log("form confirm");
     const user = {
-        id:form.id,
-        password:form.password,
-        level:form.level,
-        phoneNo:form.phoneNo,
+        id: form.id,
+        password: form.password,
+        level: form.level,
+        phoneNo: form.phoneNo,
         name: form.name,
     }
-    tableData.push(user)
+    pageLoad()
 }
 const dialogCancel = () => {
     console.log("two methods is ok");
@@ -238,10 +219,10 @@ const dialogCancel = () => {
 
 let dialogVisible = ref(false)
 interface User {
-    id:string
-    password:string
-    level:string
-    phoneNo:string
+    id: string
+    password: string
+    level: string
+    phoneNo: string
     name: string
 }
 const tableDelete = (index: number, row: User) => {
@@ -259,7 +240,7 @@ const tableDelete = (index: number, row: User) => {
                 type: 'success',
                 message: 'Delete completed',
             })
-            tableData.splice(index,1)
+            tableData.splice(index, 1)
             console.log("sccess delete" + row);
         })
         .catch(() => {
@@ -270,19 +251,29 @@ const tableDelete = (index: number, row: User) => {
         })
 }
 const tableAdd = () => {
-    console.log("two methods is ok");
+    form.value={
+    id: '',
+    password: '',
+    level: '',
+    phoneNo: '',
+    name: '',
+    }
 }
 const tableEdit = (index: number, row: User) => {
-    console.log("edit");
-    form=row
+    form.value = row
 }
-const bgOpen=()=>{
+const bgOpen = () => {
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(10px)'
 }
-const bgCancel = () => {
+
+const formRef = ref<FormInstance>()
+
+const bgCancel = (formRef:FormInstance|undefined) => {
     var popupbg = document.getElementById('routeContioner')
     popupbg!.style.filter = 'blur(0px)'
+    if (!formRef) return
+    formRef.resetFields()
 }
 
 
